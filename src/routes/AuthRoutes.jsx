@@ -1,9 +1,11 @@
 import { Route } from 'react-router-dom';
+import PageLogin from '@pages/_auth/login';
+import PageRegister from '@pages/_auth/register';
 
 const AuthRoutes = (
   <>
-    <Route path="/login" element={<p>Login Page</p>} />
-    <Route path="/register" element={<p>Register Page</p>} />
+    <Route path="/login" element={<PageLogin />} />
+    <Route path="/register" element={<PageRegister />} />
   </>
 );
 

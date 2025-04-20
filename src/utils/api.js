@@ -30,7 +30,6 @@ async function register({ name, email, password }) {
         password,
       }),
     });
-    if (!response.ok) throw new Error('failed register.');
     const { status, message, data } = await response.json();
     if (status !== 'success') throw new Error(message);
     return data;
@@ -48,7 +47,6 @@ async function login({ email, password }) {
       },
       body: JSON.stringify({ email, password })
     });
-    if (!response.ok) throw new Error('failed login.');
     const { status, message, data } = await response.json();
     if (status !== 'success') throw new Error(message);
     return data;

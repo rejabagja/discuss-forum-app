@@ -1,4 +1,4 @@
-import { TypeCategoryItem } from '@components/types/category.type';
+import { TypeCategoryItem } from './types/category.type';
 
 const CategoryItem = ({ category, selectedCategory, toggleFilter }) => {
   const isSelected = category === selectedCategory;

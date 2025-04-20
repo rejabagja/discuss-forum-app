@@ -1,4 +1,4 @@
-import { usePageHome } from './hook';
+import { useHome } from './hooks';
 import CategoryList from '@components/CategoryList';
 import ThreadList from '@components/ThreadList';
 import { BiPlus } from 'react-icons/bi';
@@ -12,16 +12,16 @@ const PageHome = () => {
     handleDownVote,
     handleUpVote,
     toggleSelectedCategory,
-  } = usePageHome();
+  } = useHome();
 
   const filteredThreadList = categories.selectedCategory
-    ? threadList.filter((thread) => {
-      return thread.category === categories.selectedCategory;
-    })
+    ? threadList.filter(
+      (thread) => thread.category === categories.selectedCategory
+    )
     : threadList;
 
   return (
-    <section className="home-page pb-20">
+    <section className="home-page">
       <header className="mb-6">
         <p className="mb-2 font-medium">Popular Category:</p>
         <CategoryList categories={categories} filter={toggleSelectedCategory} />

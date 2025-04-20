@@ -7,7 +7,7 @@ import {
   BiSolidLike,
   BiSolidDislike,
 } from 'react-icons/bi';
-import { TypeThreadItem } from '@components/types/thread.type';
+import { TypeThreadItem } from './types/thread.type';
 
 const ThreadItem = ({ thread, upVote, downVote }) => {
   const isLiked = thread.upVotesBy.includes(thread.authUser?.id);

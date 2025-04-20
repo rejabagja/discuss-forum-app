@@ -1,5 +1,5 @@
 import CategoryItem from './CategoryItem';
-import { TypeCategoryList } from '@components/types/category.type';
+import { TypeCategoryList } from './types/category.type';
 
 const CategoryList = ({ categories, filter }) => {
   return (

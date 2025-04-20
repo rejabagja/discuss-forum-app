@@ -1,0 +1,47 @@
+import AuthForm from './AuthForm';
+import { FiMail, FiLock } from 'react-icons/fi';
+import { TypeFormLogin } from './types/auth-form-input.type';
+import FormInput from './FormInput';
+
+const FormLogin = ({
+  onSubmitHandler,
+  error,
+  email,
+  onChangeEmail,
+  password,
+  onChangePassword,
+  isLoading,
+}) => {
+  return (
+    <AuthForm onSubmitHandler={onSubmitHandler} error={error}>
+      <FormInput
+        label="Email"
+        type="email"
+        value={email}
+        changeHandler={onChangeEmail}
+        icon={<FiMail />}
+      />
+      <FormInput
+        label="Password"
+        type="password"
+        value={password}
+        changeHandler={onChangePassword}
+        icon={<FiLock />}
+      />
+      <button
+        type="submit"
+        className="btn btn-accent w-full"
+        disabled={isLoading}
+      >
+        {isLoading && (
+          <span className="loading loading-spinner loading-xs"></span>
+        )}
+        {isLoading ? 'logging in...' : 'Login'}
+      </button>
+    </AuthForm>
+  );
+};
+
+FormLogin.propTypes = TypeFormLogin;
+
+export default FormLogin;

@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@utils/api';
-import { showLoading, hideLoading } from 'react-redux-loading-bar';
 import { setCategories } from '@states/categories';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { showLoading, hideLoading } from 'react-redux-loading-bar';
 import { upVote as upVoteSync, downVote as downVoteSync, neutralVote as neutralVoteSync } from '@states/threads';
 
 
@@ -9,11 +9,10 @@ export const fetchThreads = createAsyncThunk('threads/fetchThreads', async (_, {
   try {
     dispatch(showLoading());
     const { threads } = await api.getThreads();
-    const threadCategories = [
-      ...new Set(threads.map((thread) => thread.category)),
-    ];
 
-    dispatch(setCategories(threadCategories));
+    const uniqueCategories = [...new Set(threads.map((thread) => thread.category))];
+    dispatch(setCategories(uniqueCategories));
+
     return threads;
   } catch (error) {
     return rejectWithValue(error);

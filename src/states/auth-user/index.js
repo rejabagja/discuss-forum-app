@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { showLoading, hideLoading } from 'react-redux-loading-bar';
+import { clearAuthUser as clearAuth } from '@states/auth-user';
 import api from '@utils/api';
 
 export const loginUser = createAsyncThunk(
@@ -7,6 +8,7 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue, dispatch }) => {
     try {
       dispatch(showLoading());
+      dispatch(clearAuth());
       const { token } = await api.login(credentials);
       api.setAccessToken(token);
       const { user } = await api.getOwnProfile();
@@ -37,6 +39,9 @@ const authUserSlice = createSlice({
       state.error = null;
       api.removeAccessToken('');
     },
+    clearError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -57,5 +62,5 @@ const authUserSlice = createSlice({
   },
 });
 
-export const { setAuthUser, clearAuthUser } = authUserSlice.actions;
+export const { setAuthUser, clearAuthUser, clearError } = authUserSlice.actions;
 export default authUserSlice.reducer;

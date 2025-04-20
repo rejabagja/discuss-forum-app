@@ -17,7 +17,7 @@ const LayoutApp = () => {
         }`}
       >
         <ThemeToggle />
-        <div className="flex-1 w-full max-w-4xl mx-auto p-5 border-accent border-x-2 border-dashed shadow">
+        <div className="flex-1 flex flex-col w-full max-w-4xl mx-auto p-5 border-accent border-x-2 border-dashed shadow pb-24">
           <Outlet />
         </div>
       </main>

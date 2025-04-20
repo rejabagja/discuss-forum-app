@@ -1,5 +1,5 @@
 import ThreadItem from './ThreadItem';
-import { TypeThreadList } from '@components/types/thread.type';
+import { TypeThreadList } from './types/thread.type';
 
 const ThreadList = ({ threads, handleUpVote, handleDownVote }) => {
   return (
