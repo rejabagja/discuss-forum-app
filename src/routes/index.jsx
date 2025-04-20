@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { preloadProcess } from '@states/preload';
 import LayoutApp from '@layouts/App';
+import PageNotFound from '@pages/404-not-found';
 import PreloadLoader from '@components/PreloadLoader';
 
 import PublicRoutes from './PublicRoutes';
@@ -35,7 +36,7 @@ const AppRoutes = () => {
           />
         </Route>
 
-        <Route path="*" element={<p>404 Page</p>} />
+        <Route path="*" element={<PageNotFound />} />
       </Route>
     </Routes>
   );
