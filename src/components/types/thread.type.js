@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
 
-const UserShape = {
+export const UserShape = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,

@@ -39,4 +39,17 @@ function parseHtmlString(htmlString) {
   return parser(sanitizedHtml);
 }
 
-export { timeAgo, parseHtmlStringWithTrim, parseHtmlString };
+function leaderboardRingColor(order) {
+  switch (order) {
+  case 1:
+    return 'ring-[#FEBA17]';
+  case 2:
+    return 'ring-[#DBDBDB]';
+  case 3:
+    return 'ring-[#74512D]';
+  default:
+    return 'ring-base-200';
+  }
+}
+
+export { timeAgo, parseHtmlStringWithTrim, parseHtmlString, leaderboardRingColor };

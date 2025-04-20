@@ -181,7 +181,6 @@ async function setVoteComment({ threadId, commentId, voteType = VoteType.NEUTRAL
 async function getLeaderBoards() {
   try {
     const response = await fetch(`${BASE_URL}/leaderboards`);
-    if (!response.ok) throw new Error('failed get leaderboards.');
     const { status, message, data } = await response.json();
     if (status !== 'success') throw new Error(message);
     return data;
