@@ -42,11 +42,11 @@ function parseHtmlString(htmlString) {
 function leaderboardRingColor(order) {
   switch (order) {
   case 1:
-    return 'ring-[#FEBA17]';
+    return 'ring-yellow-400';
   case 2:
-    return 'ring-[#DBDBDB]';
+    return 'ring-gray-300';
   case 3:
-    return 'ring-[#74512D]';
+    return 'ring-yellow-900';
   default:
     return 'ring-base-200';
   }
