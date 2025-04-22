@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { classNameType } from './index';
 
 const FormShape = {
   onSubmitHandler: PropTypes.func.isRequired,
@@ -31,10 +32,35 @@ export const TypeFormRegister = {
   onChangeName: PropTypes.func.isRequired
 };
 
-export const TypeFormInput = {
+const InputShape = {
   label: PropTypes.string.isRequired,
   type: PropTypes.string,
+  value: PropTypes.string,
+  changeHandler: PropTypes.func,
+  className: classNameType
+};
+
+export const TypeInputIcon = {
+  ...InputShape,
   icon: PropTypes.node,
-  value: PropTypes.string.isRequired,
-  changeHandler: PropTypes.func.isRequired
+};
+
+export const TypeInput = {
+  ...InputShape,
+};
+
+export const TypeEditableContent = {
+  placeholder: PropTypes.string,
+  onInput: PropTypes.func
+};
+
+export const TypeFormThreadCreate = {
+  title: PropTypes.string.isRequired,
+  category: PropTypes.string.isRequired,
+  onChangeTitle: PropTypes.func.isRequired,
+  onInputBody: PropTypes.func.isRequired,
+  onChangeCategory: PropTypes.func.isRequired,
+  handleCreateThread: PropTypes.func.isRequired,
+  error: FormShape.error,
+  isLoading: FormShape.isLoading
 };

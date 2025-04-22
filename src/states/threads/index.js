@@ -1,13 +1,13 @@
 import api from '@utils/api';
 import { setCategories } from '@states/categories';
+import { clearError as clearThreadsError } from '@states/threads';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { showLoading, hideLoading } from 'react-redux-loading-bar';
 import { upVote as upVoteSync, downVote as downVoteSync, neutralVote as neutralVoteSync } from '@states/threads';
 
 
 export const fetchThreads = createAsyncThunk('threads/fetchThreads', async (_, { rejectWithValue, dispatch }) => {
   try {
-    dispatch(showLoading());
+    dispatch(clearThreadsError());
     const { threads } = await api.getThreads();
 
     const uniqueCategories = [...new Set(threads.map((thread) => thread.category))];
@@ -16,8 +16,6 @@ export const fetchThreads = createAsyncThunk('threads/fetchThreads', async (_, {
     return threads;
   } catch (error) {
     return rejectWithValue(error);
-  } finally {
-    dispatch(hideLoading());
   }
 });
 
@@ -49,10 +47,11 @@ export const neutralVoteThreads = createAsyncThunk('threads/neutralVoteThreads',
   }
 });
 
-export const addThread = createAsyncThunk('threads/add', async (thread, { rejectWithValue }) => {
+export const addThread = createAsyncThunk('threads/add', async (newThread, { rejectWithValue, dispatch }) => {
   try {
-    const { thread: newThread } = await api.createThread(thread);
-    return newThread;
+    dispatch(clearThreadsError());
+    const { thread } = await api.createThread(newThread);
+    return thread;
   } catch (error) {
     return rejectWithValue(error);
   }
@@ -60,11 +59,16 @@ export const addThread = createAsyncThunk('threads/add', async (thread, { reject
 
 const threadsSlice = createSlice({
   name: 'threads',
-  initialState: [],
+  initialState: {
+    data: [],
+    error: null,
+    isLoading: false,
+    isCreated: false,
+  },
   reducers: {
     upVote: (state, action) => {
       const { threadId, userId } = action.payload;
-      return state.map((thread) => {
+      state.data = state.data.map((thread) => {
         if (thread.id === threadId && !thread.upVotesBy.includes(userId)) {
           return {
             ...thread,
@@ -77,7 +81,7 @@ const threadsSlice = createSlice({
     },
     downVote: (state, action) => {
       const { threadId, userId } = action.payload;
-      return state.map((thread) => {
+      state.data = state.data.map((thread) => {
         if (thread.id === threadId && !thread.downVotesBy.includes(userId)) {
           return {
             ...thread,
@@ -90,7 +94,7 @@ const threadsSlice = createSlice({
     },
     neutralVote: (state, action) => {
       const { threadId, userId } = action.payload;
-      return state.map((thread) => {
+      state.data = state.data.map((thread) => {
         if (thread.id === threadId) {
           return {
             ...thread,
@@ -101,11 +105,40 @@ const threadsSlice = createSlice({
         return thread;
       });
     },
+    clearError: (state) => {
+      state.error = null;
+    },
+    resetCreatedStatus: (state) => {
+      state.isCreated = false;
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchThreads.fulfilled, (state, action) => (action.payload));
+    builder
+      .addCase(fetchThreads.fulfilled, (state, action) => {
+        state.error = null;
+        state.data = action.payload;
+      })
+      .addCase(fetchThreads.rejected, (state, action) => {
+        state.error = action.payload;
+      });
+    builder
+      .addCase(addThread.pending, (state) => {
+        state.isLoading = true;
+        state.isCreated = false;
+      })
+      .addCase(addThread.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.data = [action.payload, ...state.data];
+        state.isCreated = true;
+      })
+      .addCase(addThread.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+        state.isCreated = false;
+      });
   },
 });
 
-export const { upVote, downVote, neutralVote } = threadsSlice.actions;
+export const { upVote, downVote, neutralVote, clearError, resetCreatedStatus } = threadsSlice.actions;
 export default threadsSlice.reducer;

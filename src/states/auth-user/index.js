@@ -14,7 +14,6 @@ export const loginUser = createAsyncThunk(
       const { user } = await api.getOwnProfile();
       return user;
     } catch (error) {
-      console.log(error);
       return rejectWithValue(error.message || error || 'Login failed');
     } finally {
       dispatch(hideLoading());

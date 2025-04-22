@@ -1,18 +1,15 @@
 import api from '@utils/api';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { showLoading, hideLoading } from 'react-redux-loading-bar';
 import { clearError as clearUsersError } from '@states/users';
 
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, { rejectWithValue, dispatch }) => {
   try {
-    dispatch(showLoading());
+    dispatch(clearUsersError());
     const { users } = await api.getUsers();
     return users;
   } catch (error) {
     return rejectWithValue(error);
-  } finally {
-    dispatch(hideLoading());
   }
 });
 

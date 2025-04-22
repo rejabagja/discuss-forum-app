@@ -1,27 +1,21 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchUsers } from '@states/users';
+import { fetchUsersThreads } from '@states/combine';
 import { setSelectedCategory } from '@states/categories';
 import {
   upVoteThreads,
   downVoteThreads,
   neutralVoteThreads,
-  fetchThreads,
 } from '@states/threads';
 
 
 const useHome = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { users, categories, authUser, threads } = useSelector(
-    ({ users, categories, authUser, threads }) => ({
-      users: users.data,
-      categories,
-      authUser: authUser.data,
-      threads
-    })
-  );
+  const { data: users } = useSelector(({ users }) => users);
+  const { data: threads } = useSelector(({ threads }) => threads);
+  const { categories, authUser } = useSelector(({ categories, authUser }) => ({ categories, authUser: authUser.data }));
   const threadList = threads.map((thread) => ({
     ...thread,
     owner: users.find((user) => user.id === thread.ownerId),
@@ -61,8 +55,7 @@ const useHome = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchUsers());
-    dispatch(fetchThreads());
+    dispatch(fetchUsersThreads());
   }, [dispatch]);
 
   return { authUser, threadList, categories, handleUpVote, handleDownVote, toggleSelectedCategory };

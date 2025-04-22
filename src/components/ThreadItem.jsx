@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { timeAgo, parseHtmlStringWithTrim } from '@utils/index';
+import { timeAgo, parseHtmlString } from '@utils/index';
 import {
   BiLike,
   BiDislike,
@@ -28,8 +28,8 @@ const ThreadItem = ({ thread, upVote, downVote }) => {
           </Link>
         </h4>
       </header>
-      <div className="thread-item__body text-sm mt-1">
-        {parseHtmlStringWithTrim(thread.body, 238)}
+      <div className="thread-item__body text-sm mt-1 max-h-24 line-clamp-4">
+        {parseHtmlString(thread.body)}
       </div>
       <footer className="thread-item__footer flex justify-start items-center gap-4 py-3 text-sm">
         <button

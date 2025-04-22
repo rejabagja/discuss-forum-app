@@ -5,6 +5,7 @@ import { preloadProcess } from '@states/preload';
 import LayoutApp from '@layouts/App';
 import PageNotFound from '@pages/404-not-found';
 import PreloadLoader from '@components/PreloadLoader';
+import PageThreadCreate from '@pages/thread-create';
 
 import PublicRoutes from './PublicRoutes';
 import AuthRoutes from './AuthRoutes';
@@ -30,10 +31,7 @@ const AppRoutes = () => {
         <Route element={<GuestOnly />}>{AuthRoutes}</Route>
 
         <Route element={<RequireAuth />}>
-          <Route
-            path="/threads/create"
-            element={<p>Create New Thread Page</p>}
-          />
+          <Route path="/threads/create" element={<PageThreadCreate />} />
         </Route>
 
         <Route path="*" element={<PageNotFound />} />

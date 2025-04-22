@@ -100,7 +100,6 @@ async function createThread({ title, body, category = '' }) {
         category
       })
     });
-    if (!response.ok) throw new Error('failed create thread.');
     const { status, message, data } = await response.json();
     if (status !== 'success') throw new Error(message);
     return data;

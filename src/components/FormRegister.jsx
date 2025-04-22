@@ -1,5 +1,5 @@
 import AuthForm from './AuthForm';
-import FormInput from './FormInput';
+import InputIcon from './InputIcon';
 import { FiMail, FiLock, FiUser } from 'react-icons/fi';
 import { TypeFormRegister } from './types/auth-form-input.type';
 
@@ -16,20 +16,20 @@ const FormRegister = ({
 }) => {
   return (
     <AuthForm onSubmitHandler={onSubmitHandler} error={error}>
-      <FormInput
+      <InputIcon
         label="Name"
         icon={<FiUser />}
         value={name}
         changeHandler={onChangeName}
       />
-      <FormInput
+      <InputIcon
         label="Email"
         type="email"
         value={email}
         changeHandler={onChangeEmail}
         icon={<FiMail />}
       />
-      <FormInput
+      <InputIcon
         label="Password"
         type="password"
         value={password}

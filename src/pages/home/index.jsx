@@ -19,7 +19,6 @@ const PageHome = () => {
       (thread) => thread.category === categories.selectedCategory
     )
     : threadList;
-
   return (
     <section className="home-page">
       <header className="mb-6">

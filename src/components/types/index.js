@@ -5,3 +5,5 @@ export const nullableString = PropTypes.oneOfType([
   PropTypes.oneOf([null]),
 ]);
 
+export const classNameType = PropTypes.string;
+

@@ -1,6 +1,5 @@
 import parser from 'html-react-parser';
 import DOMPurify from 'dompurify';
-import truncate from 'truncate-html';
 
 
 function timeAgo(date) {
@@ -28,12 +27,6 @@ function timeAgo(date) {
   return 'Just now';
 }
 
-function parseHtmlStringWithTrim(htmlString, limit) {
-  const sanitizedHtml = DOMPurify.sanitize(htmlString);
-  const truncatedHtml = truncate(sanitizedHtml, limit);
-  return parser(truncatedHtml);
-}
-
 function parseHtmlString(htmlString) {
   const sanitizedHtml = DOMPurify.sanitize(htmlString);
   return parser(sanitizedHtml);
@@ -52,4 +45,4 @@ function leaderboardRingColor(order) {
   }
 }
 
-export { timeAgo, parseHtmlStringWithTrim, parseHtmlString, leaderboardRingColor };
+export { timeAgo, parseHtmlString, leaderboardRingColor };
