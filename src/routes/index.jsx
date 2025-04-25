@@ -21,7 +21,8 @@ const AppRoutes = () => {
     dispatch(preloadProcess());
   }, [dispatch]);
 
-  if (preload.isLoading) return <PreloadLoader />;
+  // if (preload.isLoading) return <PreloadLoader />;
+  if (preload.isLoading) return null;
 
   return (
     <Routes>

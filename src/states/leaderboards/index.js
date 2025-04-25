@@ -1,17 +1,13 @@
 import api from '@utils/api';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { showLoading, hideLoading } from 'react-redux-loading-bar';
 
 
-export const fetchLeaderboards = createAsyncThunk('leaderboards/receive', async (_, { rejectWithValue, dispatch }) => {
+export const fetchLeaderboards = createAsyncThunk('leaderboards/receive', async (_, { rejectWithValue }) => {
   try {
-    dispatch(showLoading());
     const { leaderboards } = await api.getLeaderBoards();
     return leaderboards;
   } catch (error) {
     return rejectWithValue(error);
-  } finally {
-    dispatch(hideLoading());
   }
 });
 

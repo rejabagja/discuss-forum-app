@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchUsersThreads } from '@states/combine';
+import { fetchHomeData } from '@states/thunks';
 import { setSelectedCategory } from '@states/categories';
 import {
   upVoteThreads,
@@ -55,7 +55,7 @@ const useHome = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchUsersThreads());
+    dispatch(fetchHomeData());
   }, [dispatch]);
 
   return { authUser, threadList, categories, handleUpVote, handleDownVote, toggleSelectedCategory };

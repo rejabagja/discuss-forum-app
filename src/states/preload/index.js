@@ -1,23 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@utils/api';
-import { setAuthUser, clearAuthUser } from '../auth-user';
-import { showLoading, hideLoading } from 'react-redux-loading-bar';
+import { setAuthUser } from '../auth-user';
 
 
 export const preloadProcess = createAsyncThunk(
   'preload/preloadProcess',
   async (_, { dispatch, rejectWithValue }) => {
     try {
-      dispatch(showLoading());
       const { user } = await api.getOwnProfile();
       dispatch(setAuthUser(user));
       return true;
     } catch (error) {
       console.log(error);
-      dispatch(clearAuthUser());
       return rejectWithValue(error.message || 'failed to load app.');
-    } finally {
-      dispatch(hideLoading());
     }
   });
 

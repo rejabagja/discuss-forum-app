@@ -2,7 +2,7 @@ import parser from 'html-react-parser';
 import DOMPurify from 'dompurify';
 
 
-function timeAgo(date) {
+export const timeAgo = (date) => {
   const now = new Date();
   const past = new Date(date);
   const seconds = Math.floor((now - past) / 1000);
@@ -25,14 +25,14 @@ function timeAgo(date) {
   }
 
   return 'Just now';
-}
+};
 
-function parseHtmlString(htmlString) {
+export const parseHtmlString = (htmlString) => {
   const sanitizedHtml = DOMPurify.sanitize(htmlString);
   return parser(sanitizedHtml);
-}
+};
 
-function leaderboardRingColor(order) {
+export const leaderboardRingColor = (order) => {
   switch (order) {
   case 1:
     return 'ring-yellow-400';
@@ -43,6 +43,4 @@ function leaderboardRingColor(order) {
   default:
     return 'ring-base-200';
   }
-}
-
-export { timeAgo, parseHtmlString, leaderboardRingColor };
+};

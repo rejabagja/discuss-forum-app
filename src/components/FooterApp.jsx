@@ -5,10 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { clearAuthUser } from '@states/auth-user';
 
 const FooterApp = () => {
-  const { authUser, theme } = useSelector(({ authUser, theme }) => ({
-    authUser: authUser.data,
-    theme,
-  }));
+  const authUser = useSelector(({ authUser }) => authUser.data);
   const dispatch = useDispatch();
   const onLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
@@ -18,13 +15,7 @@ const FooterApp = () => {
 
   return (
     <footer>
-      <nav
-        className={`btm-nav max-w-3xl mx-auto border-accent border-x-2 border-t-2 rounded-tl-lg rounded-tr-lg shadow-lg ${
-          theme === 'dark'
-            ? 'bg-none'
-            : 'bg-gradient-to-b from-white to-purple-100'
-        }`}
-      >
+      <nav className="btm-nav max-w-3xl mx-auto border-accent border-x-2 border-t-2 rounded-tl-lg rounded-tr-lg shadow-lg dark:bg-none bg-gradient-to-b from-white to-purple-100">
         <Link
           to="/"
           className="hover:bg-secondary hover:text-secondary-content rounded-tl-md"

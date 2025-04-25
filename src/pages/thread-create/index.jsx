@@ -5,6 +5,7 @@ const PageThreadCreate = () => {
   const {
     title,
     onChangeTitle,
+    body,
     onInputBody,
     category,
     onChangeCategory,
@@ -21,6 +22,7 @@ const PageThreadCreate = () => {
         <FormThreadCreate
           title={title}
           onChangeTitle={onChangeTitle}
+          body={body}
           onInputBody={onInputBody}
           category={category}
           onChangeCategory={onChangeCategory}

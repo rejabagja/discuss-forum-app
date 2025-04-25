@@ -123,7 +123,6 @@ async function getThreads() {
 async function getThreadDetail(threadId) {
   try {
     const response = await fetch(`${BASE_URL}/threads/${threadId}`);
-    if (!response.ok) throw new Error('failed get thread detail.');
     const { status, message, data } = await response.json();
     if (status !== 'success') throw new Error(message);
     return data;
@@ -140,7 +139,6 @@ async function createComment({ threadId, content }) {
         content
       })
     });
-    if (!response.ok) throw new Error('failed create comment.');
     const { status, message, data } = await response.json();
     if (status !== 'success') throw new Error(message);
     return data;
@@ -168,7 +166,6 @@ async function setVoteComment({ threadId, commentId, voteType = VoteType.NEUTRAL
     const response = await _fetchWithToken(`${BASE_URL}/threads/${threadId}/comments/${commentId}/${voteType}`, {
       method: 'POST'
     });
-    if (!response.ok) throw new Error(`failed set comment vote to ${voteType}.`);
     const { status, message, data } = await response.json();
     if (status !== 'success') throw new Error(message);
     return data;

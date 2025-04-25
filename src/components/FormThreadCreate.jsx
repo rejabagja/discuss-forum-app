@@ -5,6 +5,7 @@ import { TypeFormThreadCreate } from './types/auth-form-input.type';
 const FormThreadCreate = ({
   title,
   onChangeTitle,
+  body,
   onInputBody,
   category,
   onChangeCategory,
@@ -32,7 +33,9 @@ const FormThreadCreate = ({
         />
         <EditableContent
           placeholder="Write your thread body here..."
+          value={body}
           onInput={onInputBody}
+          className="max-h-[450px] overflow-y-auto"
         />
         <button
           type="submit"

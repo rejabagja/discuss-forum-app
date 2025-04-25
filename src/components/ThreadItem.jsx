@@ -22,7 +22,7 @@ const ThreadItem = ({ thread, upVote, downVote }) => {
         <h4 className="thread-item__title">
           <Link
             to={`/threads/${thread.id}`}
-            className="font-medium text-lg text-primary hover:underline active:text-purple-600"
+            className="font-medium text-lg text-blue-800 dark:text-primary hover:underline active:text-purple-600"
           >
             {thread.title}
           </Link>

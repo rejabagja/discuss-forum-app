@@ -8,11 +8,12 @@ const ThemeToggle = () => {
 
   return (
     <button
-      className="fixed top-20 right-5 btn btn-circle text-accent-darker bg-base-100 text-2xl z-50"
+      className="fixed top-20 right-5 btn btn-circle text-accent-darker bg-base-100/5 text-2xl z-50"
       onClick={() => dispatch(toggleTheme())}
       title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
     >
-      {theme === 'light' ? <BiMoon /> : <BiSun />}
+      <BiSun className="hidden dark:block" />
+      <BiMoon className="dark:hidden" />
     </button>
   );
 };

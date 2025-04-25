@@ -8,7 +8,7 @@ const HeaderApp = () => {
     <header className="fixed top-0 inset-x-0 z-50">
       <div className="bg-accent text-accent-content px-5 lg:px-0 shadow-lg">
         <div className="navbar max-w-4xl mx-auto justify-between">
-          <h1 className="font-bold text-xl xs:text-2xl underline decoration-wavy decoration-secondary transition-all duration-300">
+          <h1 className="font-bold text-blue-950 text-xl xs:text-2xl underline decoration-wavy decoration-secondary transition-all duration-300">
             Discuss Forum App
           </h1>
           {authUser && (

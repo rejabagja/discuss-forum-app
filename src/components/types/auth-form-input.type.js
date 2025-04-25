@@ -50,14 +50,17 @@ export const TypeInput = {
 };
 
 export const TypeEditableContent = {
+  value: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
-  onInput: PropTypes.func
+  onInput: PropTypes.func,
+  className: classNameType
 };
 
 export const TypeFormThreadCreate = {
   title: PropTypes.string.isRequired,
   category: PropTypes.string.isRequired,
   onChangeTitle: PropTypes.func.isRequired,
+  body: PropTypes.string.isRequired,
   onInputBody: PropTypes.func.isRequired,
   onChangeCategory: PropTypes.func.isRequired,
   handleCreateThread: PropTypes.func.isRequired,
