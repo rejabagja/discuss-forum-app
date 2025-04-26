@@ -10,7 +10,7 @@ export const preloadProcess = createAsyncThunk(
       const { user } = await api.getOwnProfile();
       dispatch(setAuthUser(user));
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
     }
   });
 

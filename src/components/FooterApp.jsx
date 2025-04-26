@@ -3,14 +3,33 @@ import { BiChat } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearAuthUser } from '@states/auth-user';
+import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 
 const FooterApp = () => {
   const authUser = useSelector(({ authUser }) => authUser.data);
   const dispatch = useDispatch();
   const onLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) {
-      dispatch(clearAuthUser());
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will be logged out!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, logout',
+      cancelButtonText: 'Cancel',
+      customClass: {
+        popup: 'font-ibm w-96',
+        icon: 'w-14 h-14',
+        title: 'text-2xl font-bold pt-2',
+        confirmButton: 'bg-primary',
+        cancelButton: 'bg-error',
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(clearAuthUser());
+        toast.success('You have been logged out.');
+      }
+    });
   };
 
   return (

@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchThread } from '@states/thread-detail';
 import { useContentEditable, useFetchData } from '@hooks';
@@ -10,19 +10,19 @@ import {
 } from '@states/thread-detail';
 import { useEffect } from 'react';
 import { ErrorType } from '@constants';
+import { showAuthRequiredToast } from '@utils';
 
 
 const useThreadDetail = () => {
   const { threadId } = useParams();
   const { isLoading: fetchDataLoading, error: fetchDataError } = useFetchData([() => fetchThread(threadId)]);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [commentContent, setCommentContent, onInputComment] = useContentEditable('');
   const { data: thread, isLoading: createCommentLoading } = useSelector(({ threadDetail }) => threadDetail);
   const authUser = useSelector(({ authUser }) => authUser.data);
 
   const handleUpVoteThread = () => {
-    if (!authUser) return navigate('/login');
+    if (!authUser) return showAuthRequiredToast('thread');
     if (thread.upVotesBy.includes(authUser.id)) {
       dispatch(neutralVoteThread(threadId));
     } else {
@@ -30,7 +30,7 @@ const useThreadDetail = () => {
     }
   };
   const handleDownVoteThread = () => {
-    if (!authUser) return navigate('/login');
+    if (!authUser) return showAuthRequiredToast('thread');
     if (thread.downVotesBy.includes(authUser.id)) {
       dispatch(neutralVoteThread(threadId));
     } else {
@@ -38,7 +38,7 @@ const useThreadDetail = () => {
     }
   };
   const handleUpVoteComment = (comment) => {
-    if (!authUser) return navigate('/login');
+    if (!authUser) return showAuthRequiredToast('comment');
     if (comment.upVotesBy.includes(authUser.id)) {
       dispatch(neutralVoteComment(comment.id));
     } else {
@@ -46,7 +46,7 @@ const useThreadDetail = () => {
     }
   };
   const handleDownVoteComment = (comment) => {
-    if (!authUser) return navigate('/login');
+    if (!authUser) return showAuthRequiredToast('comment');
     if (comment.downVotesBy.includes(authUser.id)) {
       dispatch(neutralVoteComment(comment.id));
     } else {
@@ -59,9 +59,9 @@ const useThreadDetail = () => {
   };
 
   useEffect(() => {
-    document.title = 'Thread Detail - Discuss Forum App';
+    document.title = thread ? `${thread.title} - Discuss Forum App` : 'Discuss Forum App';
     return () => document.title = 'Discuss Forum App';
-  }, [dispatch]);
+  }, [thread]);
 
   return {
     thread, createCommentLoading,

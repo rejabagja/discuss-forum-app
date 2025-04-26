@@ -1,5 +1,4 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { setSelectedCategory } from '@states/categories';
 import {
   upVoteThreads,
@@ -10,12 +9,12 @@ import { useFetchData } from '@hooks';
 import { fetchUsers } from '@states/users';
 import { fetchThreads } from '@states/threads';
 import { ErrorType } from '@constants';
+import { showAuthRequiredToast } from '@utils';
 
 
 const useHome = () => {
   const { error: fetchDataError, isLoading: fetchDataLoading } = useFetchData([fetchUsers, fetchThreads]);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const users = useSelector(({ users }) => users.data);
   const threads = useSelector(({ threads }) => threads.data);
   const authUser = useSelector(({ authUser }) => authUser.data);
@@ -35,7 +34,7 @@ const useHome = () => {
     }
   };
   const handleUpVote = (thread) => {
-    if (!authUser) return navigate('/login');
+    if (!authUser) return showAuthRequiredToast('thread');
     if (thread.upVotesBy.includes(authUser.id)) {
       dispatch(
         neutralVoteThreads(thread.id)
@@ -47,7 +46,7 @@ const useHome = () => {
     }
   };
   const handleDownVote = (thread) => {
-    if (!authUser) return navigate('/login');
+    if (!authUser) return showAuthRequiredToast('thread');
     if (thread.downVotesBy.includes(authUser.id)) {
       dispatch(
         neutralVoteThreads(thread.id)

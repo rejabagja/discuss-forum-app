@@ -8,6 +8,7 @@ import {
   downComment as downCommentSync,
   neutralComment as neutralCommentSync
 } from './index';
+import { toast } from 'react-toastify';
 
 
 export const fetchThread = createAsyncThunk('threadDetail/fetchThread', async (threadId, { rejectWithValue }) => {
@@ -26,7 +27,7 @@ export const upVoteThread = createAsyncThunk('threadDetail/upVote', async (threa
     dispatch(upVoteSync({ userId: authUser.data.id }));
     await api.setVoteThread(threadId, api.VoteType.UP_VOTE);
   } catch (error) {
-    alert(error.message);
+    toast.error(error.message);
     return rejectWithValue({ userId: authUser.data.id, error: error.info() });
   }
 });
@@ -37,7 +38,7 @@ export const downVoteThread = createAsyncThunk('threadDetail/downVote', async (t
     dispatch(downVoteSync({ userId: authUser.data.id }));
     await api.setVoteThread(threadId, api.VoteType.DOWN_VOTE);
   } catch (error) {
-    alert(error.message);
+    toast.error(error.message);
     return rejectWithValue({ userId: authUser.data.id, error: error.info() });
   }
 });
@@ -48,7 +49,7 @@ export const neutralVoteThread = createAsyncThunk('threadDetail/neutralVote', as
     dispatch(neutralVoteSync({ userId: authUser.data.id }));
     await api.setVoteThread(threadId, api.VoteType.NEUTRAL_VOTE);
   } catch (error) {
-    alert(error.message);
+    toast.error(error.message);
     const { upVotesBy, downVotesBy } = threadDetail.data;
     return rejectWithValue({ upVotesBy, downVotesBy, error: error.info() });
   }
@@ -62,7 +63,7 @@ export const upVoteComment = createAsyncThunk(
       dispatch(upCommentSync({ commentId, userId: authUser.data.id }));
       await api.setVoteComment({ commentId, threadId: threadDetail.data.id, voteType:api.VoteType.UP_VOTE });
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
       return rejectWithValue({ commentId, userId: authUser.data.id, error: error.info() });
     }
   }
@@ -76,7 +77,7 @@ export const downVoteComment = createAsyncThunk(
       dispatch(downCommentSync({ commentId, userId: authUser.data.id }));
       await api.setVoteComment({ commentId, threadId: threadDetail.data.id, voteType:api.VoteType.DOWN_VOTE });
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
       return rejectWithValue({ commentId, userId: authUser.data.id, error: error.info() });
     }
   }
@@ -90,7 +91,7 @@ export const neutralVoteComment = createAsyncThunk(
       dispatch(neutralCommentSync({ commentId, userId: authUser.data.id }));
       await api.setVoteComment({ commentId, threadId: threadDetail.data.id, voteType:api.VoteType.NEUTRAL_VOTE });
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
       const { upVotesBy, downVotesBy } = threadDetail.data.comments.find((comment) => comment.id === commentId);
       return rejectWithValue({ commentId, upVotesBy, downVotesBy, error: error.info() });
     }
@@ -102,10 +103,11 @@ export const createComment = createAsyncThunk(
   async ({ content, threadId }, { rejectWithValue }) => {
     try {
       const { comment: newComment, message } = await api.createComment({ content, threadId });
-      alert(message);
+      const toastMessage = `${message} successfully`;
+      toast.success(toastMessage);
       return newComment;
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
       return rejectWithValue(error.info());
     }
   }
@@ -143,30 +145,31 @@ const threadDetailSlice = createSlice({
     upComment: (state, action) => {
       const { commentId, userId } = action.payload;
       const comment = state.data.comments.find((comment) => comment.id === commentId);
-      if (comment) {
+      if (!comment) return;
+      if (comment.downVotesBy.includes(userId)) {
         comment.downVotesBy = comment.downVotesBy.filter((id) => id !== userId);
-        comment.upVotesBy.push(userId);
       }
+      comment.upVotesBy.push(userId);
     },
     downComment: (state, action) => {
       const { commentId, userId } = action.payload;
       const comment = state.data.comments.find(
         (comment) => comment.id === commentId
       );
-      if (comment) {
+      if (!comment) return;
+      if (comment.upVotesBy.includes(userId)) {
         comment.upVotesBy = comment.upVotesBy.filter((id) => id !== userId);
-        comment.downVotesBy.push(userId);
       }
+      comment.downVotesBy.push(userId);
     },
     neutralComment: (state, action) => {
       const { commentId, userId } = action.payload;
       const comment = state.data.comments.find(
         (comment) => comment.id === commentId
       );
-      if (comment) {
-        comment.upVotesBy = comment.upVotesBy.filter((id) => id !== userId);
-        comment.downVotesBy = comment.downVotesBy.filter((id) => id !== userId);
-      }
+      if (!comment) return;
+      comment.upVotesBy = comment.upVotesBy.filter((id) => id !== userId);
+      comment.downVotesBy = comment.downVotesBy.filter((id) => id !== userId);
     }
   },
   extraReducers: (builder) => {
@@ -179,7 +182,6 @@ const threadDetailSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(fetchThread.rejected, (state, action) => {
-        state.data = null;
         state.error = action.payload;
       });
 
@@ -215,7 +217,7 @@ const threadDetailSlice = createSlice({
       })
       .addCase(downVoteThread.rejected, (state, action) => {
         const { userId, error } = action.payload;
-        state.data.upVotesBy = state.data.downVotesBy.filter(
+        state.data.downVotesBy = state.data.downVotesBy.filter(
           (id) => id !== userId
         );
         state.error = error;
@@ -227,8 +229,8 @@ const threadDetailSlice = createSlice({
       })
       .addCase(neutralVoteThread.rejected, (state, action) => {
         const { upVotesBy, downVotesBy, error } = action.payload;
-        state.error = error;
         state.data = { ...state.data, upVotesBy, downVotesBy };
+        state.error = error;
       });
 
     builder

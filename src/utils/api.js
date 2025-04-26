@@ -28,15 +28,11 @@ async function register({ name, email, password }) {
       }),
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       throw new AppError(message ?? response.statusText, response.status, ErrorType.CREATE_USER);
     }
     return { ...data, message };
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.CREATE_USER);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }
@@ -51,15 +47,11 @@ async function login({ email, password }) {
       body: JSON.stringify({ email, password })
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       throw new AppError(message ?? response.statusText, response.status, ErrorType.LOGIN);
     }
     return data;
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.LOGIN);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }
@@ -68,16 +60,11 @@ async function getUsers() {
   try {
     const response = await fetch(`${BASE_URL}/users`);
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       throw new AppError(message ?? response.statusText, response.status, ErrorType.FETCH_DATA);
     }
     return data;
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.FETCH_DATA);
-      console.dir(error);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }
@@ -97,16 +84,11 @@ async function getOwnProfile() {
   try {
     const response = await _fetchWithToken(`${BASE_URL}/users/me`);
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       throw new AppError(message ?? response.statusText, response.status, ErrorType.FETCH_DATA);
     }
     return data;
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.FETCH_DATA);
-      console.dir(error);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }
@@ -122,15 +104,11 @@ async function createThread({ title, body, category = '' }) {
       })
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       throw new AppError(message ?? response.statusText, response.status, ErrorType.CREATE_THREAD);
     }
     return { ...data, message };
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.CREATE_THREAD);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }
@@ -139,15 +117,11 @@ async function getThreads() {
   try {
     const response = await fetch(`${BASE_URL}/threads`);
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       throw new AppError(message ?? response.statusText, response.status, ErrorType.FETCH_DATA);
     }
     return data;
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.FETCH_DATA);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }
@@ -156,15 +130,11 @@ async function getThreadDetail(threadId) {
   try {
     const response = await fetch(`${BASE_URL}/threads/${threadId}`);
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       throw new AppError(message ?? response.statusText, response.status, ErrorType.FETCH_DATA);
     }
     return data;
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.FETCH_DATA);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }
@@ -178,15 +148,11 @@ async function createComment({ threadId, content }) {
       })
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       throw new AppError(message ?? response.statusText, response.status, ErrorType.CREATE_COMMENT);
     }
     return { ...data, message };
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.CREATE_COMMENT);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }
@@ -197,16 +163,12 @@ async function setVoteThread(threadId, voteType = VoteType.NEUTRAL_VOTE) {
       method: 'POST'
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       const error = new AppError(message ?? response.statusText, response.status, ErrorType.VOTE_THREAD);
       return Promise.reject(error);
     }
     return data;
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.VOTE_THREAD);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }
@@ -217,16 +179,12 @@ async function setVoteComment({ threadId, commentId, voteType = VoteType.NEUTRAL
       method: 'POST'
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       const error = new AppError(message ?? response.statusText, response.status, ErrorType.VOTE_COMMENT);
       return Promise.reject(error);
     }
     return data;
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.VOTE_COMMENT);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }
@@ -235,15 +193,11 @@ async function getLeaderBoards() {
   try {
     const response = await fetch(`${BASE_URL}/leaderboards`);
     const { status, message, data } = await response.json();
-    if (status !== 'success' || response.status !== 200) {
+    if (status !== 'success' || response.status >= 400) {
       throw new AppError(message ?? response.statusText, response.status, ErrorType.FETCH_DATA);
     }
     return data;
   } catch (error) {
-    if (!error.statusCode) {
-      const error = new AppError(error.message, 500, ErrorType.FETCH_DATA);
-      return Promise.reject(error);
-    }
     return Promise.reject(error);
   }
 }

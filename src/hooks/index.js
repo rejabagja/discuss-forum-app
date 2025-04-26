@@ -33,7 +33,6 @@ export const useFetchData = (actions) => { // actions: (() => any)[]
     const fetchData = async () => {
       try {
         dispatch(showLoading());
-        setError(null);
         for (const action of actionsRef.current) {
           await dispatch(action()).unwrap();
         }

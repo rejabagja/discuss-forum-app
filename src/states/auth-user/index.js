@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@utils/api';
+import { toast } from 'react-toastify';
 
 export const loginUser = createAsyncThunk(
   'authUser/loginUser',
@@ -7,7 +8,7 @@ export const loginUser = createAsyncThunk(
     try {
       const { token } = await api.login(credentials);
       api.setAccessToken(token);
-      // add toast for success login
+      toast.success('Login successfully');
       const { user } = await api.getOwnProfile();
       return user;
     } catch (error) {

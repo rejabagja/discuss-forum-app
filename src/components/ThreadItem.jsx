@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { timeAgo, parseHtmlString } from '@utils/index';
+import { formatTimeAgo, parseHtmlString } from '@utils/index';
 import {
   BiLike,
   BiDislike,
@@ -67,7 +67,7 @@ const ThreadItem = ({ thread, upVote, downVote }) => {
           className="italic flex flex-row gap-1 items-center"
           title="created at"
         >
-          {timeAgo(thread.createdAt)}
+          {formatTimeAgo(thread.createdAt)}
         </p>
         <p className="thread-item__owner">
           created by <span className="font-medium">{thread.owner?.name}</span>

@@ -1,4 +1,5 @@
 import api from '@utils/api';
+import { toast } from 'react-toastify';
 import { setCategories } from '@states/categories';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { upVote as upVoteSync, downVote as downVoteSync, neutralVote as neutralVoteSync } from '@states/threads';
@@ -21,7 +22,7 @@ export const upVoteThreads = createAsyncThunk('threads/upVote', async (threadId,
     dispatch(upVoteSync({ threadId, userId: authUser.id }));
     await api.setVoteThread(threadId, api.VoteType.UP_VOTE);
   } catch (error) {
-    alert(error.message);
+    toast.error(error.message);
     return rejectWithValue({ threadId, userId: authUser.id, error: error.info() });
   }
 });
@@ -31,7 +32,7 @@ export const downVoteThreads = createAsyncThunk('threads/downVote', async (threa
     dispatch(downVoteSync({ threadId, userId: authUser.id }));
     await api.setVoteThread(threadId, api.VoteType.DOWN_VOTE);
   } catch (error) {
-    alert(error.message);
+    toast.error(error.message);
     return rejectWithValue({ threadId, userId: authUser.id, error: error.info() });
   }
 });
@@ -42,7 +43,7 @@ export const neutralVoteThreads = createAsyncThunk('threads/neutralVoteThreads',
     dispatch(neutralVoteSync({ threadId, userId: authUser.id }));
     await api.setVoteThread(threadId, api.VoteType.NEUTRAL_VOTE);
   } catch (error) {
-    alert(error.message);
+    toast.error(error.message);
     return rejectWithValue({ threadId, upVotesBy, downVotesBy, error: error.info() });
   }
 });
@@ -50,7 +51,8 @@ export const neutralVoteThreads = createAsyncThunk('threads/neutralVoteThreads',
 export const addThread = createAsyncThunk('threads/add', async (newThread, { rejectWithValue }) => {
   try {
     const { thread, message } = await api.createThread(newThread);
-    alert(message);
+    const toastMessage = `${message} successfully`;
+    toast.success(toastMessage);
     return thread;
   } catch (error) {
     return rejectWithValue(error.info());
@@ -69,26 +71,27 @@ const threadsSlice = createSlice({
     upVote: (state, action) => {
       const { threadId, userId } = action.payload;
       const thread = state.data.find((thread) => thread.id === threadId);
-      if (thread) {
+      if (!thread) return;
+      if (thread.downVotesBy.includes(userId)) {
         thread.downVotesBy = thread.downVotesBy.filter((id) => id !== userId);
-        thread.upVotesBy.push(userId);
       }
+      thread.upVotesBy.push(userId);
     },
     downVote: (state, action) => {
       const { threadId, userId } = action.payload;
       const thread = state.data.find((thread) => thread.id === threadId);
-      if (thread) {
+      if (!thread) return;
+      if (thread.upVotesBy.includes(userId)) {
         thread.upVotesBy = thread.upVotesBy.filter((id) => id !== userId);
-        thread.downVotesBy.push(userId);
       }
+      thread.downVotesBy.push(userId);
     },
     neutralVote: (state, action) => {
       const { threadId, userId } = action.payload;
       const thread = state.data.find((thread) => thread.id === threadId);
-      if (thread) {
-        thread.upVotesBy = thread.upVotesBy.filter((id) => id !== userId);
-        thread.downVotesBy = thread.downVotesBy.filter((id) => id !== userId);
-      }
+      if (!thread) return;
+      thread.upVotesBy = thread.upVotesBy.filter((id) => id !== userId);
+      thread.downVotesBy = thread.downVotesBy.filter((id) => id !== userId);
     },
     clearError: (state) => {
       state.error = null;
@@ -117,7 +120,7 @@ const threadsSlice = createSlice({
       })
       .addCase(addThread.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.data = [action.payload, ...state.data];
+        state.data.unshift(action.payload);
         state.isCreated = true;
       })
       .addCase(addThread.rejected, (state, action) => {

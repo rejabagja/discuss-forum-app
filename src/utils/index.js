@@ -1,8 +1,11 @@
 import parser from 'html-react-parser';
 import DOMPurify from 'dompurify';
+import { toast } from 'react-toastify';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 
-export const timeAgo = (date) => {
+export const formatTimeAgo = (date) => {
   const now = new Date();
   const past = new Date(date);
   const seconds = Math.floor((now - past) / 1000);
@@ -62,3 +65,20 @@ export class AppError extends Error {
     };
   }
 }
+
+export const showAuthRequiredToast = (action) => {
+  const toastContent = React.createElement(
+    'div',
+    null,
+    'You must be ',
+    React.createElement(
+      Link,
+      { to: '/login', className: 'text-blue-500 underline font-medium' },
+      'logged in'
+    ),
+    ' to perform ',
+    action,
+    ' action.'
+  );
+  toast.info(toastContent);
+};

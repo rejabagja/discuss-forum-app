@@ -1,4 +1,4 @@
-import { parseHtmlString, timeAgo } from '@utils/index';
+import { parseHtmlString, formatTimeAgo } from '@utils/index';
 import { BiLike, BiDislike, BiSolidLike, BiSolidDislike } from 'react-icons/bi';
 import { TypeThreadDetailContent } from './types/thread.type';
 
@@ -64,7 +64,7 @@ const ThreadDetailContent = ({
           <span className="font-medium">{thread?.owner.name}</span>
         </div>
         <p className="italic" title="created at">
-          {timeAgo(thread?.createdAt)}
+          {formatTimeAgo(thread?.createdAt)}
         </p>
       </footer>
     </>

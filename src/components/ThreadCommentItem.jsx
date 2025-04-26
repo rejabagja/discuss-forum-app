@@ -1,4 +1,4 @@
-import { timeAgo, parseHtmlString } from '@utils/index';
+import { formatTimeAgo, parseHtmlString } from '@utils/index';
 import { BiLike, BiDislike, BiSolidLike, BiSolidDislike } from 'react-icons/bi';
 import { TypeThreadCommentItem } from './types/thread.type';
 
@@ -22,7 +22,7 @@ const ThreadCommentItem = ({
           <span className="font-medium">{comment.owner.name}</span>
         </div>
         <span className="posted-at italic text-sm">
-          {timeAgo(comment.createdAt)}
+          {formatTimeAgo(comment.createdAt)}
         </span>
       </header>
       <div className="comment-item__body">
