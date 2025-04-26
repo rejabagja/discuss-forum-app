@@ -1,23 +1,25 @@
-import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchThreadDetailData } from '@states/thunks';
-import { useContentEditable } from '@hooks/index';
+import { fetchThread } from '@states/thread-detail';
+import { useContentEditable, useFetchData } from '@hooks';
 import {
   upVoteThread, downVoteThread,
   neutralVoteThread, upVoteComment,
   downVoteComment, neutralVoteComment,
-  createComment, ErrorType
+  createComment
 } from '@states/thread-detail';
+import { useEffect } from 'react';
+import { ErrorType } from '@constants';
 
 
 const useThreadDetail = () => {
   const { threadId } = useParams();
-  const [commentContent, setCommentContent, onInputComment] = useContentEditable('');
-  const { data: thread, error, isLoading } = useSelector(({ threadDetail }) => threadDetail);
-  const authUser = useSelector(({ authUser }) => authUser.data);
+  const { isLoading: fetchDataLoading, error: fetchDataError } = useFetchData([() => fetchThread(threadId)]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [commentContent, setCommentContent, onInputComment] = useContentEditable('');
+  const { data: thread, isLoading: createCommentLoading } = useSelector(({ threadDetail }) => threadDetail);
+  const authUser = useSelector(({ authUser }) => authUser.data);
 
   const handleUpVoteThread = () => {
     if (!authUser) return navigate('/login');
@@ -57,15 +59,16 @@ const useThreadDetail = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchThreadDetailData(threadId));
-  }, [threadId, dispatch]);
+    document.title = 'Thread Detail - Discuss Forum App';
+    return () => document.title = 'Discuss Forum App';
+  }, [dispatch]);
 
   return {
-    thread, error, isLoading,
-    ErrorType, authUser,
+    thread, createCommentLoading,
+    authUser, fetchDataError, fetchDataLoading,
     handleUpVoteThread, handleDownVoteThread,
     handleUpVoteComment, handleDownVoteComment,
-    handleCreateComment, commentContent, onInputComment
+    handleCreateComment, commentContent, onInputComment, ErrorType
   };
 };
 

@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createUser } from '@states/users';
 import { useEffect } from 'react';
 import { clearError as clearRegisterError } from '@states/users';
+import { ErrorType } from '@constants';
 
 
 const useRegister = () => {
-  const { isLoading, error } = useSelector(({ users }) => users);
+  const { isLoading: registerLoading, error } = useSelector(({ users }) => users);
   const dispatch = useDispatch();
   const [name, onChangeName] = useInput('');
   const [email, onChangeEmail] = useInput('');
@@ -20,7 +21,7 @@ const useRegister = () => {
   useEffect(() => {
     return () => dispatch(clearRegisterError());
   }, [dispatch]);
-  // adding alert when user is registered successfully
+
   return {
     name,
     onChangeName,
@@ -29,8 +30,9 @@ const useRegister = () => {
     password,
     onChangePassword,
     handleRegister,
-    isLoading,
+    registerLoading,
     error,
+    ErrorType
   };
 };
 

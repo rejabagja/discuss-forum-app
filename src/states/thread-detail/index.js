@@ -9,20 +9,14 @@ import {
   neutralComment as neutralCommentSync
 } from './index';
 
-export const ErrorType = {
-  NOT_FOUND: 'NOT_FOUND',
-  CREATE_COMMENT: 'CREATE_COMMENT',
-};
 
 export const fetchThread = createAsyncThunk('threadDetail/fetchThread', async (threadId, { rejectWithValue }) => {
   try {
     const { detailThread } = await api.getThreadDetail(threadId);
     return detailThread;
   } catch (error) {
-    return rejectWithValue({
-      type: ErrorType.NOT_FOUND,
-      message: error,
-    });
+    if (error.message === 'thread tidak ditemukan') error.message = 'Thread not found';
+    return rejectWithValue(error.info());
   }
 });
 
@@ -32,8 +26,8 @@ export const upVoteThread = createAsyncThunk('threadDetail/upVote', async (threa
     dispatch(upVoteSync({ userId: authUser.data.id }));
     await api.setVoteThread(threadId, api.VoteType.UP_VOTE);
   } catch (error) {
-    alert(error);
-    return rejectWithValue(authUser.data.id);
+    alert(error.message);
+    return rejectWithValue({ userId: authUser.data.id, error: error.info() });
   }
 });
 
@@ -43,8 +37,8 @@ export const downVoteThread = createAsyncThunk('threadDetail/downVote', async (t
     dispatch(downVoteSync({ userId: authUser.data.id }));
     await api.setVoteThread(threadId, api.VoteType.DOWN_VOTE);
   } catch (error) {
-    alert(error);
-    return rejectWithValue(authUser.data.id);
+    alert(error.message);
+    return rejectWithValue({ userId: authUser.data.id, error: error.info() });
   }
 });
 
@@ -54,9 +48,9 @@ export const neutralVoteThread = createAsyncThunk('threadDetail/neutralVote', as
     dispatch(neutralVoteSync({ userId: authUser.data.id }));
     await api.setVoteThread(threadId, api.VoteType.NEUTRAL_VOTE);
   } catch (error) {
-    alert(error);
+    alert(error.message);
     const { upVotesBy, downVotesBy } = threadDetail.data;
-    return rejectWithValue({ upVotesBy, downVotesBy });
+    return rejectWithValue({ upVotesBy, downVotesBy, error: error.info() });
   }
 });
 
@@ -68,8 +62,8 @@ export const upVoteComment = createAsyncThunk(
       dispatch(upCommentSync({ commentId, userId: authUser.data.id }));
       await api.setVoteComment({ commentId, threadId: threadDetail.data.id, voteType:api.VoteType.UP_VOTE });
     } catch (error) {
-      alert(error);
-      return rejectWithValue(authUser.data.id);
+      alert(error.message);
+      return rejectWithValue({ commentId, userId: authUser.data.id, error: error.info() });
     }
   }
 );
@@ -82,8 +76,8 @@ export const downVoteComment = createAsyncThunk(
       dispatch(downCommentSync({ commentId, userId: authUser.data.id }));
       await api.setVoteComment({ commentId, threadId: threadDetail.data.id, voteType:api.VoteType.DOWN_VOTE });
     } catch (error) {
-      alert(error);
-      return rejectWithValue(authUser.data.id);
+      alert(error.message);
+      return rejectWithValue({ commentId, userId: authUser.data.id, error: error.info() });
     }
   }
 );
@@ -96,9 +90,9 @@ export const neutralVoteComment = createAsyncThunk(
       dispatch(neutralCommentSync({ commentId, userId: authUser.data.id }));
       await api.setVoteComment({ commentId, threadId: threadDetail.data.id, voteType:api.VoteType.NEUTRAL_VOTE });
     } catch (error) {
-      alert(error);
-      const { id, upVotesBy, downVotesBy } = threadDetail.data.comments.find((comment) => comment.id === commentId);
-      return rejectWithValue({ id, upVotesBy, downVotesBy });
+      alert(error.message);
+      const { upVotesBy, downVotesBy } = threadDetail.data.comments.find((comment) => comment.id === commentId);
+      return rejectWithValue({ commentId, upVotesBy, downVotesBy, error: error.info() });
     }
   }
 );
@@ -107,14 +101,12 @@ export const createComment = createAsyncThunk(
   'threadDetail/createComment',
   async ({ content, threadId }, { rejectWithValue }) => {
     try {
-      const { comment: newComment } = await api.createComment({ content, threadId });
-      return { newComment };
+      const { comment: newComment, message } = await api.createComment({ content, threadId });
+      alert(message);
+      return newComment;
     } catch (error) {
-      alert(error);
-      return rejectWithValue({
-        type: ErrorType.CREATE_COMMENT,
-        message: error,
-      });
+      alert(error.message);
+      return rejectWithValue(error.info());
     }
   }
 );
@@ -197,8 +189,7 @@ const threadDetailSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(createComment.fulfilled, (state, action) => {
-        const { newComment } = action.payload;
-        state.data.comments.unshift(newComment);
+        state.data.comments.unshift(action.payload);
         state.isLoading = false;
       })
       .addCase(createComment.rejected, (state, action) => {
@@ -206,40 +197,76 @@ const threadDetailSlice = createSlice({
         state.isLoading = false;
       });
 
-    builder.addCase(upVoteThread.rejected, (state, action) => {
-      state.data.upVotesBy = state.data.upVotesBy.filter(
-        (id) => id !== action.payload
-      );
-    });
+    builder
+      .addCase(upVoteThread.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(upVoteThread.rejected, (state, action) => {
+        const { userId, error } = action.payload;
+        state.data.upVotesBy = state.data.upVotesBy.filter(
+          (id) => id !== userId
+        );
+        state.error = error;
+      });
 
-    builder.addCase(downVoteThread.rejected, (state, action) => {
-      state.data.upVotesBy = state.data.downVotesBy.filter(
-        (id) => id !== action.payload
-      );
-    });
+    builder
+      .addCase(downVoteThread.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(downVoteThread.rejected, (state, action) => {
+        const { userId, error } = action.payload;
+        state.data.upVotesBy = state.data.downVotesBy.filter(
+          (id) => id !== userId
+        );
+        state.error = error;
+      });
 
-    builder.addCase(neutralVoteThread.rejected, (state, action) => {
-      state.data = { ...state.data, ...action.payload };
-    });
+    builder
+      .addCase(neutralVoteThread.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(neutralVoteThread.rejected, (state, action) => {
+        const { upVotesBy, downVotesBy, error } = action.payload;
+        state.error = error;
+        state.data = { ...state.data, upVotesBy, downVotesBy };
+      });
 
-    builder.addCase(upVoteComment.rejected, (state, action) => {
-      const comment = state.data.comments.find((comment) => comment.id === action.payload);
-      comment.upVotesBy = comment.upVotesBy.filter((id) => id !== action.payload);
-    });
+    builder
+      .addCase(upVoteComment.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(upVoteComment.rejected, (state, action) => {
+        const { commentId, userId, error } = action.payload;
+        const comment = state.data.comments.find((comment) => comment.id === commentId);
+        if (comment) {
+          comment.upVotesBy = comment.upVotesBy.filter((id) => id !== userId);
+        }
+        state.error = error;
+      });
 
-    builder.addCase(downVoteComment.rejected, (state, action) => {
-      const comment = state.data.comments.find((comment) => comment.id === action.payload);
-      comment.downVotesBy = comment.downVotesBy.filter((id) => id !== action.payload);
-    });
+    builder
+      .addCase(downVoteComment.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(downVoteComment.rejected, (state, action) => {
+        const { commentId, userId, error } = action.payload;
+        const comment = state.data.comments.find((comment) => comment.id === commentId);
+        if (comment) {
+          comment.downVotesBy = comment.downVotesBy.filter((id) => id !== userId);
+        }
+        state.error = error;
+      });
 
     builder.addCase(neutralVoteComment.rejected, (state, action) => {
+      const { commentId, upVotesBy, downVotesBy, error } = action.payload;
       const comment = state.data.comments.find(
-        (comment) => comment.id === action.payload.id
+        (comment) => comment.id === commentId
       );
       if (comment) {
-        comment.upVotesBy = action.payload.upVotesBy;
-        comment.downVotesBy = action.payload.downVotesBy;
+        comment.upVotesBy = upVotesBy;
+        comment.downVotesBy = downVotesBy;
       }
+      state.error = error;
     });
   },
 });

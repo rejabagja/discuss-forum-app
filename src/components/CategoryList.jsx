@@ -1,14 +1,14 @@
 import CategoryItem from './CategoryItem';
 import { TypeCategoryList } from './types/category.type';
 
-const CategoryList = ({ categories, filter }) => {
+const CategoryList = ({ categories, selectedCategory, filter }) => {
   return (
     <div className="category-list flex flex-wrap gap-2">
-      {categories.list.map((category, index) => (
+      {categories.map((category, index) => (
         <CategoryItem
           key={index}
           category={category}
-          selectedCategory={categories.selectedCategory}
+          selectedCategory={selectedCategory}
           toggleFilter={filter}
         />
       ))}

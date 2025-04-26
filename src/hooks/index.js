@@ -1,4 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { showLoading, hideLoading } from 'react-redux-loading-bar';
+
 
 export const useInput = (initialValue) => {
   const [value, setValue] = useState(initialValue);
@@ -18,4 +21,32 @@ export const useContentEditable = (initialValue) => {
   }, [value, setValue]);
 
   return [value, setValue, onInput];
+};
+
+export const useFetchData = (actions) => { // actions: (() => any)[]
+  const dispatch = useDispatch();
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const actionsRef = useRef(actions);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        dispatch(showLoading());
+        setError(null);
+        for (const action of actionsRef.current) {
+          await dispatch(action()).unwrap();
+        }
+      } catch (error) {
+        setError(error);
+      } finally {
+        dispatch(hideLoading());
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [dispatch]);
+
+  return { error, isLoading };
 };

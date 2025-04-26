@@ -1,6 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import store from '@states/index';
+import store from '@states/store';
 import PropTypes from 'prop-types';
 
 const AppProvider = ({ children }) => {

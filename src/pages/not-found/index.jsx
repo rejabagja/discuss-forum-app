@@ -4,7 +4,7 @@ const PageNotFound = () => {
   return (
     <section className="not-found-page flex-1 flex flex-col justify-center">
       <div className="w-full max-w-xl mx-auto text-center">
-        <h2 className="font-semibold text-xl mb-2">Page Not Found</h2>
+        <h2 className="font-semibold text-xl mb-2">404 | Page Not Found</h2>
         <p className="mb-4">The page you are looking for does not exist.</p>
         <p className="mt-2 text-center text-sm">
           <Link to="/" className="link text-secondary">

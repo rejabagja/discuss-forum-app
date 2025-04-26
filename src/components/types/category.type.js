@@ -2,11 +2,6 @@ import PropTypes from 'prop-types';
 import { nullableString } from './index';
 
 
-export const CategoriesShape = {
-  list: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedCategory: nullableString,
-};
-
 export const TypeCategoryItem = {
   category: PropTypes.string.isRequired,
   selectedCategory: nullableString,
@@ -14,6 +9,7 @@ export const TypeCategoryItem = {
 };
 
 export const TypeCategoryList = {
-  categories: PropTypes.shape(CategoriesShape).isRequired,
+  categories: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedCategory: nullableString,
   filter: PropTypes.func.isRequired,
 };

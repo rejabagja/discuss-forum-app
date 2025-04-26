@@ -1,22 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { showLoading, hideLoading } from 'react-redux-loading-bar';
-import { clearAuthUser as clearAuth } from '@states/auth-user';
 import api from '@utils/api';
 
 export const loginUser = createAsyncThunk(
   'authUser/loginUser',
-  async (credentials, { rejectWithValue, dispatch }) => {
+  async (credentials, { rejectWithValue }) => {
     try {
-      dispatch(showLoading());
-      dispatch(clearAuth());
       const { token } = await api.login(credentials);
       api.setAccessToken(token);
+      // add toast for success login
       const { user } = await api.getOwnProfile();
       return user;
     } catch (error) {
-      return rejectWithValue(error.message || error || 'Login failed');
-    } finally {
-      dispatch(hideLoading());
+      return rejectWithValue(error.info());
     }
   }
 );
@@ -47,16 +42,15 @@ const authUserSlice = createSlice({
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
+        state.data = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.data = action.payload;
-        state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.data = null;
         state.error = action.payload;
+        state.isLoading = false;
       });
   },
 });

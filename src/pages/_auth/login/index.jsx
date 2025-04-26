@@ -21,7 +21,7 @@ const PageLogin = () => {
     >
       <FormLogin
         onSubmitHandler={handleLogin}
-        error={error}
+        error={error?.message}
         email={email}
         onChangeEmail={onChangeEmail}
         password={password}

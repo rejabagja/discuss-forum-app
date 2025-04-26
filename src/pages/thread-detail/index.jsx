@@ -2,12 +2,14 @@ import { useThreadDetail } from './hooks';
 import ThreadCommentInput from '@components/ThreadCommentInput';
 import ThreadCommentList from '@components/ThreadCommentList';
 import ThreadDetailContent from '@components/ThreadDetailContent';
+import FetchDataError from '@components/FetchDataError';
 
 const PageThreadDetail = () => {
   const {
     thread,
-    error,
-    isLoading,
+    fetchDataError,
+    fetchDataLoading,
+    createCommentLoading,
     authUser,
     handleCreateComment,
     handleUpVoteThread,
@@ -19,18 +21,9 @@ const PageThreadDetail = () => {
     ErrorType,
   } = useThreadDetail();
 
-  if (error && error.type === ErrorType.NOT_FOUND)
-    return (
-      <div className="h-[500px] flex items-center justify-center flex-col">
-        <h3>404</h3>
-        <p>
-          {error.message === 'thread tidak ditemukan'
-            ? 'Thread not found'
-            : error.message}
-        </p>
-      </div>
-    );
-  if (!thread) return null;
+  if (fetchDataError?.type === ErrorType.FETCH_DATA)
+    return <FetchDataError error={fetchDataError} />;
+  if (fetchDataLoading) return null;
   return (
     <section className="detail-page">
       <ThreadDetailContent
@@ -45,7 +38,7 @@ const PageThreadDetail = () => {
           value={commentContent}
           onInput={onInputComment}
           addCommentHandler={handleCreateComment}
-          isLoading={isLoading}
+          isLoading={createCommentLoading}
         />
         <ThreadCommentList
           thread={thread}

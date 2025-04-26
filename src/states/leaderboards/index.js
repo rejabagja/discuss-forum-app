@@ -7,7 +7,7 @@ export const fetchLeaderboards = createAsyncThunk('leaderboards/receive', async 
     const { leaderboards } = await api.getLeaderBoards();
     return leaderboards;
   } catch (error) {
-    return rejectWithValue(error);
+    return rejectWithValue(error.info());
   }
 });
 
@@ -19,8 +19,10 @@ const leaderboardsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchLeaderboards.fulfilled, (state, action) => {
+      .addCase(fetchLeaderboards.pending, (state) => {
         state.error = null;
+      })
+      .addCase(fetchLeaderboards.fulfilled, (state, action) => {
         state.data = action.payload;
       })
       .addCase(fetchLeaderboards.rejected, (state, action) => {

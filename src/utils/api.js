@@ -1,9 +1,6 @@
-const BASE_URL = import.meta.env.VITE_BASE_API_URL;
-const VoteType = {
-  UP_VOTE: 'up-vote',
-  DOWN_VOTE: 'down-vote',
-  NEUTRAL_VOTE: 'neutral-vote'
-};
+import { AppError } from './index';
+import { ErrorType, VoteType, BASE_URL } from '@constants';
+
 
 function setAccessToken(token) {
   localStorage.setItem('token', token);
@@ -31,10 +28,16 @@ async function register({ name, email, password }) {
       }),
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
-    return data;
+    if (status !== 'success' || response.status !== 200) {
+      throw new AppError(message ?? response.statusText, response.status, ErrorType.CREATE_USER);
+    }
+    return { ...data, message };
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.CREATE_USER);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 
@@ -48,22 +51,34 @@ async function login({ email, password }) {
       body: JSON.stringify({ email, password })
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
+    if (status !== 'success' || response.status !== 200) {
+      throw new AppError(message ?? response.statusText, response.status, ErrorType.LOGIN);
+    }
     return data;
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.LOGIN);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 
 async function getUsers() {
   try {
     const response = await fetch(`${BASE_URL}/users`);
-    if (!response.ok) throw new Error('failed get users.');
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
+    if (status !== 'success' || response.status !== 200) {
+      throw new AppError(message ?? response.statusText, response.status, ErrorType.FETCH_DATA);
+    }
     return data;
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.FETCH_DATA);
+      console.dir(error);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 
@@ -81,12 +96,18 @@ async function _fetchWithToken(url, options = {}) {
 async function getOwnProfile() {
   try {
     const response = await _fetchWithToken(`${BASE_URL}/users/me`);
-    if (!response.ok) throw new Error('failed get own profile.');
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
+    if (status !== 'success' || response.status !== 200) {
+      throw new AppError(message ?? response.statusText, response.status, ErrorType.FETCH_DATA);
+    }
     return data;
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.FETCH_DATA);
+      console.dir(error);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 
@@ -101,22 +122,33 @@ async function createThread({ title, body, category = '' }) {
       })
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
-    return data;
+    if (status !== 'success' || response.status !== 200) {
+      throw new AppError(message ?? response.statusText, response.status, ErrorType.CREATE_THREAD);
+    }
+    return { ...data, message };
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.CREATE_THREAD);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 
 async function getThreads() {
   try {
     const response = await fetch(`${BASE_URL}/threads`);
-    if (!response.ok) throw new Error('failed get threads.');
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
+    if (status !== 'success' || response.status !== 200) {
+      throw new AppError(message ?? response.statusText, response.status, ErrorType.FETCH_DATA);
+    }
     return data;
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.FETCH_DATA);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 
@@ -124,10 +156,16 @@ async function getThreadDetail(threadId) {
   try {
     const response = await fetch(`${BASE_URL}/threads/${threadId}`);
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
+    if (status !== 'success' || response.status !== 200) {
+      throw new AppError(message ?? response.statusText, response.status, ErrorType.FETCH_DATA);
+    }
     return data;
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.FETCH_DATA);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 
@@ -140,10 +178,16 @@ async function createComment({ threadId, content }) {
       })
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
-    return data;
+    if (status !== 'success' || response.status !== 200) {
+      throw new AppError(message ?? response.statusText, response.status, ErrorType.CREATE_COMMENT);
+    }
+    return { ...data, message };
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.CREATE_COMMENT);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 
@@ -152,12 +196,18 @@ async function setVoteThread(threadId, voteType = VoteType.NEUTRAL_VOTE) {
     const response = await _fetchWithToken(`${BASE_URL}/threads/${threadId}/${voteType}`, {
       method: 'POST'
     });
-    if (!response.ok) throw new Error(`failed set vote to ${voteType}.`);
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
+    if (status !== 'success' || response.status !== 200) {
+      const error = new AppError(message ?? response.statusText, response.status, ErrorType.VOTE_THREAD);
+      return Promise.reject(error);
+    }
     return data;
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.VOTE_THREAD);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 
@@ -167,10 +217,17 @@ async function setVoteComment({ threadId, commentId, voteType = VoteType.NEUTRAL
       method: 'POST'
     });
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
+    if (status !== 'success' || response.status !== 200) {
+      const error = new AppError(message ?? response.statusText, response.status, ErrorType.VOTE_COMMENT);
+      return Promise.reject(error);
+    }
     return data;
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.VOTE_COMMENT);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 
@@ -178,10 +235,16 @@ async function getLeaderBoards() {
   try {
     const response = await fetch(`${BASE_URL}/leaderboards`);
     const { status, message, data } = await response.json();
-    if (status !== 'success') throw new Error(message);
+    if (status !== 'success' || response.status !== 200) {
+      throw new AppError(message ?? response.statusText, response.status, ErrorType.FETCH_DATA);
+    }
     return data;
   } catch (error) {
-    return Promise.reject(error.message);
+    if (!error.statusCode) {
+      const error = new AppError(error.message, 500, ErrorType.FETCH_DATA);
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
   }
 }
 

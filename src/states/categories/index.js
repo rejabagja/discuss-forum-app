@@ -4,12 +4,12 @@ import { createSlice } from '@reduxjs/toolkit';
 const categoriesSlice = createSlice({
   name: 'categories',
   initialState: {
-    list: [],
+    data: [],
     selectedCategory: null
   },
   reducers: {
     setCategories: (state, action) => {
-      state.list = action.payload;
+      state.data = action.payload;
     },
     setSelectedCategory: (state, action) => {
       state.selectedCategory = action.payload;

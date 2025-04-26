@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { classNameType } from './index';
+import { classNameType, nullableString } from './index';
 
 const FormShape = {
   onSubmitHandler: PropTypes.func.isRequired,
-  error: PropTypes.string,
+  error: nullableString,
   isLoading: PropTypes.bool.isRequired
 };
 

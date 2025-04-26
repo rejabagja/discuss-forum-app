@@ -1,21 +1,26 @@
-import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchHomeData } from '@states/thunks';
 import { setSelectedCategory } from '@states/categories';
 import {
   upVoteThreads,
   downVoteThreads,
   neutralVoteThreads,
 } from '@states/threads';
+import { useFetchData } from '@hooks';
+import { fetchUsers } from '@states/users';
+import { fetchThreads } from '@states/threads';
+import { ErrorType } from '@constants';
 
 
 const useHome = () => {
+  const { error: fetchDataError, isLoading: fetchDataLoading } = useFetchData([fetchUsers, fetchThreads]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { data: users } = useSelector(({ users }) => users);
-  const { data: threads } = useSelector(({ threads }) => threads);
-  const { categories, authUser } = useSelector(({ categories, authUser }) => ({ categories, authUser: authUser.data }));
+  const users = useSelector(({ users }) => users.data);
+  const threads = useSelector(({ threads }) => threads.data);
+  const authUser = useSelector(({ authUser }) => authUser.data);
+  const { data: categories, selectedCategory } = useSelector(({ categories }) => categories);
+
   const threadList = threads.map((thread) => ({
     ...thread,
     owner: users.find((user) => user.id === thread.ownerId),
@@ -23,7 +28,7 @@ const useHome = () => {
   }));
 
   const toggleSelectedCategory = (category) => {
-    if (category === categories.selectedCategory) {
+    if (category === selectedCategory) {
       dispatch(setSelectedCategory(null));
     } else {
       dispatch(setSelectedCategory(category));
@@ -31,34 +36,35 @@ const useHome = () => {
   };
   const handleUpVote = (thread) => {
     if (!authUser) return navigate('/login');
-    if (thread.upVotesBy.includes(thread.authUser.id)) {
+    if (thread.upVotesBy.includes(authUser.id)) {
       dispatch(
-        neutralVoteThreads({ threadId: thread.id, userId: thread.authUser.id })
+        neutralVoteThreads(thread.id)
       );
     } else {
       dispatch(
-        upVoteThreads({ threadId: thread.id, userId: thread.authUser.id })
+        upVoteThreads(thread.id)
       );
     }
   };
   const handleDownVote = (thread) => {
     if (!authUser) return navigate('/login');
-    if (thread.downVotesBy.includes(thread.authUser.id)) {
+    if (thread.downVotesBy.includes(authUser.id)) {
       dispatch(
-        neutralVoteThreads({ threadId: thread.id, userId: thread.authUser.id })
+        neutralVoteThreads(thread.id)
       );
     } else {
       dispatch(
-        downVoteThreads({ threadId: thread.id, userId: thread.authUser.id })
+        downVoteThreads(thread.id)
       );
     }
   };
 
-  useEffect(() => {
-    dispatch(fetchHomeData());
-  }, [dispatch]);
-
-  return { authUser, threadList, categories, handleUpVote, handleDownVote, toggleSelectedCategory };
+  return {
+    authUser, threadList,
+    categories, selectedCategory,
+    handleUpVote, handleDownVote,
+    toggleSelectedCategory, fetchDataError, fetchDataLoading, ErrorType
+  };
 };
 
 export { useHome };

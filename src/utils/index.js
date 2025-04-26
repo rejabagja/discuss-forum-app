@@ -44,3 +44,21 @@ export const leaderboardRingColor = (order) => {
     return 'ring-base-200';
   }
 };
+
+export class AppError extends Error {
+  constructor(message, statusCode, type) {
+    super(message);
+    this.name = 'AppError';
+    this.statusCode = statusCode;
+    this.type = type;
+  }
+
+  info() {
+    return {
+      name: this.name,
+      message: this.message,
+      statusCode: this.statusCode,
+      type: this.type,
+    };
+  }
+}

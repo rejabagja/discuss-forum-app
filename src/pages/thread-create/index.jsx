@@ -1,5 +1,6 @@
 import { useThreadCreate } from './hooks';
 import FormThreadCreate from '@components/FormThreadCreate';
+import FetchDataError from '@components/FetchDataError';
 
 const PageThreadCreate = () => {
   const {
@@ -11,8 +12,15 @@ const PageThreadCreate = () => {
     onChangeCategory,
     handleCreateThread,
     threadCreateError,
-    isLoading,
+    fetchDataError,
+    fetchDataLoading,
+    createLoading,
+    ErrorType,
   } = useThreadCreate();
+
+  if (fetchDataError?.type === ErrorType.FETCH_DATA)
+    return <FetchDataError error={fetchDataError} />;
+  if (fetchDataLoading) return null;
   return (
     <section className="thread-create-page">
       <h2 className="font-semibold text-xl mb-2 text-center">
@@ -27,8 +35,12 @@ const PageThreadCreate = () => {
           category={category}
           onChangeCategory={onChangeCategory}
           handleCreateThread={handleCreateThread}
-          error={threadCreateError}
-          isLoading={isLoading}
+          error={
+            threadCreateError?.type === ErrorType.CREATE_THREAD
+              ? threadCreateError.message
+              : null
+          }
+          isLoading={createLoading}
         />
       </div>
     </section>
