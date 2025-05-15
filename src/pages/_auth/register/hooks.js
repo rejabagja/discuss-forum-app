@@ -1,8 +1,8 @@
 import { useInput } from '@hooks/index';
 import { useDispatch, useSelector } from 'react-redux';
-import { createUser } from '@states/users';
+import { createUser } from '@states/slices/users';
 import { useEffect } from 'react';
-import { clearError as clearRegisterError } from '@states/users';
+import { clearError as clearRegisterError } from '@states/slices/users';
 import { ErrorType } from '@constants';
 
 

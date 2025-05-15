@@ -2,7 +2,7 @@ import api from '@utils/api';
 import { VoteType } from '@constants';
 import { toast } from 'react-toastify';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { upVote as upVoteSync, downVote as downVoteSync, neutralVote as neutralVoteSync } from '@states/threads';
+import { upVote as upVoteSync, downVote as downVoteSync, neutralVote as neutralVoteSync } from '@states/slices/threads';
 
 
 export const fetchThreads = createAsyncThunk('threads/fetchThreads', async (_, { rejectWithValue }) => {

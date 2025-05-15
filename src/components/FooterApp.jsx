@@ -2,7 +2,7 @@ import { FiBarChart2, FiLogIn, FiLogOut } from 'react-icons/fi';
 import { BiChat } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { clearAuthUser } from '@states/auth-user';
+import { clearAuthUser } from '@states/slices/auth-user';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 
