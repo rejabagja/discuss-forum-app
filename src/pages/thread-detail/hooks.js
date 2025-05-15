@@ -9,7 +9,6 @@ import {
   createComment
 } from '@states/thread-detail';
 import { useEffect } from 'react';
-import { ErrorType } from '@constants';
 import { showAuthRequiredToast } from '@utils';
 
 
@@ -68,7 +67,7 @@ const useThreadDetail = () => {
     authUser, fetchDataError, fetchDataLoading,
     handleUpVoteThread, handleDownVoteThread,
     handleUpVoteComment, handleDownVoteComment,
-    handleCreateComment, commentContent, onInputComment, ErrorType
+    handleCreateComment, commentContent, onInputComment,
   };
 };
 

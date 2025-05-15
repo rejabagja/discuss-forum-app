@@ -1,72 +1,77 @@
 import api from '@utils/api';
+import { VoteType } from '@constants';
 import { toast } from 'react-toastify';
-import { setCategories } from '@states/categories';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { upVote as upVoteSync, downVote as downVoteSync, neutralVote as neutralVoteSync } from '@states/threads';
 
 
-export const fetchThreads = createAsyncThunk('threads/fetchThreads', async (_, { rejectWithValue, dispatch }) => {
+export const fetchThreads = createAsyncThunk('threads/fetchThreads', async (_, { rejectWithValue }) => {
   try {
     const { threads } = await api.getThreads();
-    const uniqueCategories = [...new Set(threads.map((thread) => thread.category))];
-    dispatch(setCategories(uniqueCategories));
     return threads;
   } catch (error) {
     return rejectWithValue(error.info());
   }
 });
 
+export const addThread = createAsyncThunk(
+  'threads/add',
+  async (newThread, { rejectWithValue }) => {
+    try {
+      const { thread, message } = await api.createThread(newThread);
+      const toastMessage = `${message} successfully`;
+      toast.success(toastMessage);
+      return thread;
+    } catch (error) {
+      return rejectWithValue(error.info());
+    }
+  }
+);
+
 export const upVoteThreads = createAsyncThunk('threads/upVote', async (threadId, { rejectWithValue, dispatch, getState }) => {
-  const authUser = getState().authUser?.data;
+  const authUser = getState().authUser.data;
   try {
     dispatch(upVoteSync({ threadId, userId: authUser.id }));
-    await api.setVoteThread(threadId, api.VoteType.UP_VOTE);
+    await api.setVoteThread(threadId, VoteType.UP_VOTE);
   } catch (error) {
     toast.error(error.message);
     return rejectWithValue({ threadId, userId: authUser.id, error: error.info() });
   }
 });
+
 export const downVoteThreads = createAsyncThunk('threads/downVote', async (threadId, { rejectWithValue, dispatch, getState }) => {
-  const authUser = getState().authUser?.data;
+  const authUser = getState().authUser.data;
   try {
     dispatch(downVoteSync({ threadId, userId: authUser.id }));
-    await api.setVoteThread(threadId, api.VoteType.DOWN_VOTE);
+    await api.setVoteThread(threadId, VoteType.DOWN_VOTE);
   } catch (error) {
     toast.error(error.message);
     return rejectWithValue({ threadId, userId: authUser.id, error: error.info() });
   }
 });
-export const neutralVoteThreads = createAsyncThunk('threads/neutralVoteThreads', async (threadId, { rejectWithValue, dispatch, getState }) => {
-  const authUser = getState().authUser?.data;
+
+export const neutralVoteThreads = createAsyncThunk('threads/neutralVote', async (threadId, { rejectWithValue, dispatch, getState }) => {
+  const authUser = getState().authUser.data;
   const { upVotesBy, downVotesBy } = getState().threads.data.find((thread) => thread.id === threadId);
   try {
     dispatch(neutralVoteSync({ threadId, userId: authUser.id }));
-    await api.setVoteThread(threadId, api.VoteType.NEUTRAL_VOTE);
+    await api.setVoteThread(threadId, VoteType.NEUTRAL_VOTE);
   } catch (error) {
     toast.error(error.message);
     return rejectWithValue({ threadId, upVotesBy, downVotesBy, error: error.info() });
   }
 });
 
-export const addThread = createAsyncThunk('threads/add', async (newThread, { rejectWithValue }) => {
-  try {
-    const { thread, message } = await api.createThread(newThread);
-    const toastMessage = `${message} successfully`;
-    toast.success(toastMessage);
-    return thread;
-  } catch (error) {
-    return rejectWithValue(error.info());
-  }
-});
+const initialState = {
+  data: [],
+  error: null,
+  isLoading: false,
+  createStatus: false,
+};
 
 const threadsSlice = createSlice({
   name: 'threads',
-  initialState: {
-    data: [],
-    error: null,
-    isLoading: false,
-    isCreated: false,
-  },
+  initialState,
   reducers: {
     upVote: (state, action) => {
       const { threadId, userId } = action.payload;
@@ -96,8 +101,8 @@ const threadsSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    resetCreatedStatus: (state) => {
-      state.isCreated = false;
+    resetCreateStatus: (state) => {
+      state.createStatus = false;
     },
   },
   extraReducers: (builder) => {
@@ -114,19 +119,19 @@ const threadsSlice = createSlice({
 
     builder
       .addCase(addThread.pending, (state) => {
-        state.error = null;
         state.isLoading = true;
-        state.isCreated = false;
+        state.error = null;
+        state.createStatus = false;
       })
       .addCase(addThread.fulfilled, (state, action) => {
         state.isLoading = false;
         state.data.unshift(action.payload);
-        state.isCreated = true;
+        state.createStatus = true;
       })
       .addCase(addThread.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-        state.isCreated = false;
+        state.createStatus = false;
       });
 
     builder
@@ -138,8 +143,8 @@ const threadsSlice = createSlice({
         const thread = state.data.find((thread) => thread.id === threadId);
         if (thread) {
           thread.upVotesBy = thread.upVotesBy.filter((id) => id !== userId);
+          state.error = error;
         }
-        state.error = error;
       });
 
     builder
@@ -151,8 +156,8 @@ const threadsSlice = createSlice({
         const thread = state.data.find((thread) => thread.id === threadId);
         if (thread) {
           thread.downVotesBy = thread.downVotesBy.filter((id) => id !== userId);
+          state.error = error;
         }
-        state.error = error;
       });
 
     builder
@@ -165,11 +170,11 @@ const threadsSlice = createSlice({
         if (thread) {
           thread.upVotesBy = upVotesBy;
           thread.downVotesBy = downVotesBy;
+          state.error = error;
         }
-        state.error = error;
       });
   },
 });
 
-export const { upVote, downVote, neutralVote, clearError, resetCreatedStatus } = threadsSlice.actions;
+export const { upVote, downVote, neutralVote, clearError, resetCreateStatus } = threadsSlice.actions;
 export default threadsSlice.reducer;

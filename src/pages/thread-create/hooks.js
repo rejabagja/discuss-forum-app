@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchThreads } from '@states/threads';
 import { useFetchData } from '@hooks';
+import { ErrorType } from '@constants';
 import { useInput, useContentEditable } from '@hooks/index';
 import { useDispatch, useSelector } from 'react-redux';
-import { ErrorType } from '@constants';
-import { addThread, resetCreatedStatus, clearError as clearThreadcreateError } from '@states/threads';
+import { addThread, resetCreateStatus, clearError as clearThreadCreateError } from '@states/threads';
 
 
 const useThreadCreate = () => {
@@ -15,24 +15,24 @@ const useThreadCreate = () => {
   const [title, onChangeTitle] = useInput('');
   const [category, onChangeCategory] = useInput('');
   const [body, , onInputBody] = useContentEditable('');
-  const { error: threadCreateError, isLoading: createLoading, isCreated } = useSelector(({ threads }) => threads);
+  const { error: threadCreateError, isLoading: createLoading, createStatus } = useSelector(({ threads }) => threads);
 
   const handleCreateThread = () => {
     dispatch(addThread({ title, body, category }));
   };
 
   useEffect(() => {
-    if (isCreated) {
+    if (createStatus) {
       navigate('/');
-      dispatch(resetCreatedStatus());
+      dispatch(resetCreateStatus());
     }
-  }, [navigate, dispatch, isCreated]);
+  }, [navigate, dispatch, createStatus]);
 
   useEffect(() => {
     document.title = 'Create Thread - Discuss Forum App';
     return () => {
       document.title = 'Discuss Forum App';
-      dispatch(clearThreadcreateError());
+      dispatch(clearThreadCreateError());
     };
   }, [dispatch]);
 

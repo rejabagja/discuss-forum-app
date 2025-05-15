@@ -1,7 +1,7 @@
+import { useEffect } from 'react';
 import { useInput } from '@hooks/index';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '@states/auth-user';
-import { useEffect } from 'react';
+import { login } from '@states/auth-user';
 import { clearError as clearLoginError } from '@states/auth-user';
 
 
@@ -15,7 +15,7 @@ const useLogin = () => {
   const [password, onChangePassword] = useInput('');
   const handleLogin = (event) => {
     event.preventDefault();
-    dispatch(loginUser({ email, password }));
+    dispatch(login({ email, password }));
   };
 
   useEffect(() => {

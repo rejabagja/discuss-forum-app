@@ -157,7 +157,7 @@ async function createComment({ threadId, content }) {
   }
 }
 
-async function setVoteThread(threadId, voteType = VoteType.NEUTRAL_VOTE) {
+async function setVoteThread(threadId, voteType) {
   try {
     const response = await _fetchWithToken(`${BASE_URL}/threads/${threadId}/${voteType}`, {
       method: 'POST'
@@ -173,7 +173,7 @@ async function setVoteThread(threadId, voteType = VoteType.NEUTRAL_VOTE) {
   }
 }
 
-async function setVoteComment({ threadId, commentId, voteType = VoteType.NEUTRAL_VOTE }) {
+async function setVoteComment({ threadId, commentId, voteType }) {
   try {
     const response = await _fetchWithToken(`${BASE_URL}/threads/${threadId}/comments/${commentId}/${voteType}`, {
       method: 'POST'
@@ -214,7 +214,6 @@ const api = {
   setVoteThread,
   setVoteComment,
   getLeaderBoards,
-  VoteType,
   setAccessToken,
   getAccessToken,
   removeAccessToken,

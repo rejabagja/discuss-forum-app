@@ -16,15 +16,13 @@ const PageHome = () => {
     toggleSelectedCategory,
     fetchDataError,
     fetchDataLoading,
-    ErrorType,
   } = useHome();
 
   const filteredThreadList = selectedCategory
     ? threadList.filter((thread) => thread.category === selectedCategory)
     : threadList;
 
-  if (fetchDataError?.type === ErrorType.FETCH_DATA)
-    return <FetchDataError error={fetchDataError} />;
+  if (fetchDataError) return <FetchDataError error={fetchDataError} />;
   if (fetchDataLoading && threadList.length === 0) return null;
 
   return (

@@ -8,7 +8,6 @@ import {
 import { useFetchData } from '@hooks';
 import { fetchUsers } from '@states/users';
 import { fetchThreads } from '@states/threads';
-import { ErrorType } from '@constants';
 import { showAuthRequiredToast } from '@utils';
 
 
@@ -33,6 +32,7 @@ const useHome = () => {
       dispatch(setSelectedCategory(category));
     }
   };
+
   const handleUpVote = (thread) => {
     if (!authUser) return showAuthRequiredToast('thread');
     if (thread.upVotesBy.includes(authUser.id)) {
@@ -45,6 +45,7 @@ const useHome = () => {
       );
     }
   };
+
   const handleDownVote = (thread) => {
     if (!authUser) return showAuthRequiredToast('thread');
     if (thread.downVotesBy.includes(authUser.id)) {
@@ -62,7 +63,7 @@ const useHome = () => {
     authUser, threadList,
     categories, selectedCategory,
     handleUpVote, handleDownVote,
-    toggleSelectedCategory, fetchDataError, fetchDataLoading, ErrorType
+    toggleSelectedCategory, fetchDataError, fetchDataLoading,
   };
 };
 

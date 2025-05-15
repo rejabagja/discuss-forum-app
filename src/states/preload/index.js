@@ -1,14 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@utils/api';
-import { setAuthUser } from '../auth-user';
 
 
 export const preloadProcess = createAsyncThunk(
   'preload/process',
-  async (_, { dispatch }) => {
+  async () => {
     try {
       const { user } = await api.getOwnProfile();
-      dispatch(setAuthUser(user));
+      return user;
     } catch (error) {
       console.error(error.message);
     }

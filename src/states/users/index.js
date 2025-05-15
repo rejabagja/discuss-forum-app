@@ -34,13 +34,15 @@ export const createUser = createAsyncThunk('users/createUser', async (credential
   }
 });
 
+const initialState = {
+  data: [],
+  isLoading: false,
+  error: null,
+};
+
 const usersSlice = createSlice({
   name: 'users',
-  initialState: {
-    data: [],
-    isLoading: false,
-    error: null
-  },
+  initialState,
   reducers: {
     clearError: (state) => {
       state.error = null;

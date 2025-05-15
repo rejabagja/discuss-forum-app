@@ -18,11 +18,9 @@ const PageThreadDetail = () => {
     handleDownVoteComment,
     commentContent,
     onInputComment,
-    ErrorType,
   } = useThreadDetail();
 
-  if (fetchDataError?.type === ErrorType.FETCH_DATA)
-    return <FetchDataError error={fetchDataError} />;
+  if (fetchDataError) return <FetchDataError error={fetchDataError} />;
   if (fetchDataLoading) return null;
   return (
     <section className="detail-page">

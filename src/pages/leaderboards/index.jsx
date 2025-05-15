@@ -3,16 +3,10 @@ import LeaderboardList from '@components/LeaderboardList';
 import FetchDataError from '@components/FetchDataError';
 
 const PageLeaderboards = () => {
-  const {
-    leaderboards,
-    fetchDataError,
-    fetchDataLoading,
-    authUser,
-    ErrorType,
-  } = useLeaderboards();
+  const { leaderboards, fetchDataError, fetchDataLoading, authUser } =
+    useLeaderboards();
 
-  if (fetchDataError?.type === ErrorType.FETCH_DATA)
-    return <FetchDataError error={fetchDataError} />;
+  if (fetchDataError) return <FetchDataError error={fetchDataError} />;
 
   if (fetchDataLoading && leaderboards.length === 0) return null;
 

@@ -17,6 +17,7 @@ const AppRoutes = () => {
   const preload = useSelector(({ preload }) => preload);
   const dispatch = useDispatch();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+
   useEffect(() => {
     dispatch(preloadProcess());
   }, [dispatch]);

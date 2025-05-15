@@ -18,8 +18,7 @@ const PageThreadCreate = () => {
     ErrorType,
   } = useThreadCreate();
 
-  if (fetchDataError?.type === ErrorType.FETCH_DATA)
-    return <FetchDataError error={fetchDataError} />;
+  if (fetchDataError) return <FetchDataError error={fetchDataError} />;
   if (fetchDataLoading) return null;
   return (
     <section className="thread-create-page">
