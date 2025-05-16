@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchThreads } from '@states/slices/threads';
+import { fetchThreads } from '@states/thunks';
 
 
-const initialState = {
+export const initialState = {
   data: [],
   selectedCategory: null,
 };

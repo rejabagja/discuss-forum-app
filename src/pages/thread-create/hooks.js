@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchThreads } from '@states/slices/threads';
+import { fetchThreads } from '@states/thunks';
 import { useFetchData } from '@hooks';
 import { ErrorType } from '@constants';
 import { useInput, useContentEditable } from '@hooks/index';

@@ -25,3 +25,15 @@ export const preloadProcess = createAsyncThunk('preload/process', async () => {
     console.error(error.message);
   }
 });
+
+export const fetchThreads = createAsyncThunk(
+  'threads/fetchThreads',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { threads } = await api.getThreads();
+      return threads;
+    } catch (error) {
+      return rejectWithValue(error.info());
+    }
+  }
+);

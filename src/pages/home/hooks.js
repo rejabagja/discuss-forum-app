@@ -7,7 +7,7 @@ import {
 } from '@states/slices/threads';
 import { useFetchData } from '@hooks';
 import { fetchUsers } from '@states/slices/users';
-import { fetchThreads } from '@states/slices/threads';
+import { fetchThreads } from '@states/thunks';
 import { showAuthRequiredToast } from '@utils';
 
 
