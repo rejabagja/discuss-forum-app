@@ -1,5 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import api from '@utils/api';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { login, preloadProcess } from '@states/thunks';
 import reducer, { setAuthUser, clearAuthUser, clearError, initialState } from './index';
 
@@ -8,7 +7,7 @@ authUser reducer test scenarios:
 1. reducer initial state must be an object and equal to { data: null, isLoading: false, error: null }
 2. reducer must return the last state when passed an unknown action
 3. reducer must handle setAuthUser action with state.data === payload
-4. reducer must handle clearAuthUser action with state === initialState
+4. reducer must handle clearAuthUser action with state,data === null
 5. reducer must handle clearError action with state.error === null
 6. reducer must handle login.pending action with state.isLoading === true and state.error === null
 7. reducer must handle login.fulfilled action with state.isLoading === false and state.data === payload
@@ -16,11 +15,6 @@ authUser reducer test scenarios:
 9. reducer must handle preloadProcess.fulfilled action with state.data === payload
 */
 
-vi.mock('@utils/api', () => ({
-  default: {
-    removeAccessToken: vi.fn(),
-  }
-}));
 
 describe('authUserSlice reducer', () => {
   let user, prevState;
@@ -39,12 +33,8 @@ describe('authUserSlice reducer', () => {
     };
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('should return reducer initial state', () => {
-    const nextState = reducer(undefined, { type: '' });
+    const nextState = reducer(undefined, { type: '@@INIT' });
     expect(typeof nextState).toBe('object');
     expect(nextState).toEqual(initialState);
   });
@@ -59,10 +49,9 @@ describe('authUserSlice reducer', () => {
     expect(nextState.data).toEqual(user);
   });
 
-  it('should return state === initial state when handle clearAuthUser action', () => {
+  it('should return state.data === null when handle clearAuthUser action', () => {
     const nextState = reducer(prevState, clearAuthUser());
-    expect(nextState).toEqual(initialState);
-    expect(api.removeAccessToken).toHaveBeenCalled();
+    expect(nextState.data).toEqual(null);
   });
 
   it('should return state.error === null when handle clearError action', () => {

@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { clearAuthUser } from '@states/slices/auth-user';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
+import api from '@utils/api';
 
 const FooterApp = () => {
   const authUser = useSelector(({ authUser }) => authUser.data);
@@ -26,6 +27,7 @@ const FooterApp = () => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
+        api.removeAccessToken('');
         dispatch(clearAuthUser());
         toast.success('You have been logged out.');
       }

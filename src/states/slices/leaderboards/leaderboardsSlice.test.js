@@ -13,7 +13,7 @@ leaderboardsSlice reducer test scenarios:
 
 describe('leaderboardsSlice reducer', () => {
   it('should return initialState and state = { data: [], error: null }', () => {
-    const nextState = reducer(undefined, { type: '' });
+    const nextState = reducer(undefined, { type: '@@INIT' });
     expect(typeof nextState).toBe('object');
     expect(nextState).toEqual(initialState);
   });

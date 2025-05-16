@@ -4,9 +4,13 @@ import { Outlet } from 'react-router-dom';
 import ThemeToggle from '@components/ThemeToggle';
 import { useSelector } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
+import { useEffect } from 'react';
 
 const LayoutApp = () => {
   const theme = useSelector(({ theme }) => theme);
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+  }, [theme]);
   return (
     <div className="font-ibm min-h-screen flex flex-col" data-theme={theme}>
       <HeaderApp />

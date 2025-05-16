@@ -1,4 +1,3 @@
-import api from '@utils/api';
 import { createSlice } from '@reduxjs/toolkit';
 import { login, preloadProcess } from '@states/thunks';
 
@@ -15,9 +14,8 @@ const authUserSlice = createSlice({
     setAuthUser: (state, action) => {
       state.data = action.payload;
     },
-    clearAuthUser: () => {
-      api.removeAccessToken('');
-      return initialState;
+    clearAuthUser: (state) => {
+      state.data = null;
     },
     clearError: (state) => {
       state.error = null;

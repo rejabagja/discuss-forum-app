@@ -13,7 +13,7 @@ categories reducer test scenarios:
 
 describe('categoriesSlice reducer', () => {
   it('should return reducer initial state', () => {
-    const nextState = reducer(undefined, { type: '' });
+    const nextState = reducer(undefined, { type: '@@INIT' });
     expect(typeof nextState).toBe('object');
     expect(nextState).toEqual(initialState);
   });
