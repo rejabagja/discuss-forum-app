@@ -1,4 +1,4 @@
-import { fetchLeaderboards } from '@states/slices/leaderboards';
+import { fetchLeaderboards } from '@states/thunks';
 import { useSelector } from 'react-redux';
 import { useFetchData } from '@hooks';
 

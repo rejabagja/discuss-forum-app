@@ -37,3 +37,15 @@ export const fetchThreads = createAsyncThunk(
     }
   }
 );
+
+export const fetchLeaderboards = createAsyncThunk(
+  'leaderboards/receive',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { leaderboards } = await api.getLeaderBoards();
+      return leaderboards;
+    } catch (error) {
+      return rejectWithValue(error.info());
+    }
+  }
+);

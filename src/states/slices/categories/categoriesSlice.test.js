@@ -8,9 +8,7 @@ categories reducer test scenarios:
 1. reducer initial state must be an object and equal to { data: [], selectedCategory: null }
 2. reducer must return the last state when passed an unknown action
 3. reducer must handle setSelectedCategory action with state.selectedCategory === payload
-
-categories extraReducer test scenarios:
-1. reducer must handle fetchThreads.fulfilled action with state.data === payload
+4. reducer must handle fetchThreads.fulfilled action with state.data === payload
 */
 
 describe('categoriesSlice reducer', () => {
@@ -29,9 +27,7 @@ describe('categoriesSlice reducer', () => {
     const nextState = reducer(initialState, setSelectedCategory('test-category'));
     expect(nextState.selectedCategory).toBe('test-category');
   });
-});
 
-describe('categoriesSlice extraReducer', () => {
   it('should return state.data === payload when handle fetchThreads.fulfilled action', () => {
     const threads = [
       {
@@ -58,7 +54,10 @@ describe('categoriesSlice extraReducer', () => {
       },
     ];
     const categories = [...new Set(threads.map((thread) => thread.category))];
-    const nextState = reducer(initialState, { type: fetchThreads.fulfilled.type, payload: threads });
+    const nextState = reducer(initialState, {
+      type: fetchThreads.fulfilled.type,
+      payload: threads,
+    });
     expect(nextState.data).toStrictEqual(categories);
   });
 });

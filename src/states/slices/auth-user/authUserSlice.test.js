@@ -10,12 +10,10 @@ authUser reducer test scenarios:
 3. reducer must handle setAuthUser action with state.data === payload
 4. reducer must handle clearAuthUser action with state === initialState
 5. reducer must handle clearError action with state.error === null
-
-authUser extraReducer test scenarios:
-1. reducer must handle login.pending action with state.isLoading === true and state.error === null
-2. reducer must handle login.fulfilled action with state.isLoading === false and state.data === payload
-3. reducer must handle login.rejected action with state.isLoading === false and state.error === payload
-4. reducer must handle preloadProcess.fulfilled action with state.data === payload
+6. reducer must handle login.pending action with state.isLoading === true and state.error === null
+7. reducer must handle login.fulfilled action with state.isLoading === false and state.data === payload
+8. reducer must handle login.rejected action with state.isLoading === false and state.error === payload
+9. reducer must handle preloadProcess.fulfilled action with state.data === payload
 */
 
 vi.mock('@utils/api', () => ({
@@ -78,19 +76,6 @@ describe('authUserSlice reducer', () => {
     const nextState = reducer(errorState, clearError());
     expect(nextState.error).toBe(null);
   });
-});
-
-describe('authUserSlice extraReducer', () => {
-  let user;
-
-  beforeEach(() => {
-    user = {
-      id: 'test-user-id',
-      name: 'Sample User',
-      email: 'test-user@mail.com',
-      avatar: 'https://example.com/avatar.jpg',
-    };
-  });
 
   it('should handle login.pending action', () => {
     const nextState = reducer(initialState, { type: login.pending.type });
@@ -99,7 +84,10 @@ describe('authUserSlice extraReducer', () => {
   });
 
   it('should handle login.fulfilled action', () => {
-    const nextState = reducer(initialState, { type: login.fulfilled.type, payload: user });
+    const nextState = reducer(initialState, {
+      type: login.fulfilled.type,
+      payload: user,
+    });
     expect(nextState.isLoading).toBe(false);
     expect(nextState.data).toEqual(user);
   });
@@ -111,13 +99,19 @@ describe('authUserSlice extraReducer', () => {
       name: 'AppError',
       statusCode: 401,
     };
-    const nextState = reducer(initialState, { type: login.rejected.type, payload: error });
+    const nextState = reducer(initialState, {
+      type: login.rejected.type,
+      payload: error,
+    });
     expect(nextState.isLoading).toBe(false);
     expect(nextState.error).toEqual(error);
   });
 
   it('should handle preloadProcess.fulfilled action', () => {
-    const nextState = reducer(initialState, { type: preloadProcess.fulfilled.type, payload: user });
+    const nextState = reducer(initialState, {
+      type: preloadProcess.fulfilled.type,
+      payload: user,
+    });
     expect(nextState.data).toEqual(user);
   });
 });
