@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useInput } from '@hooks/index';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearError as clearLoginError, login } from '@states/auth-user';
+import { login } from '@states/thunks';
+import { clearError as clearLoginError } from '@states/slices/auth-user';
 
 
 const useLogin = () => {

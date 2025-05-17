@@ -1,66 +1,12 @@
-import api from '@utils/api';
-import { VoteType } from '@constants';
-import { toast } from 'react-toastify';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { upVote as upVoteSync, downVote as downVoteSync, neutralVote as neutralVoteSync } from '@states/threads';
+import { createSlice } from '@reduxjs/toolkit';
+import {
+  fetchThreads,
+  addThread,
+  upVoteThreads,
+  downVoteThreads,
+  neutralVoteThreads,
+} from '@states/thunks/threads';
 
-
-export const fetchThreads = createAsyncThunk('threads/fetchThreads', async (_, { rejectWithValue }) => {
-  try {
-    const { threads } = await api.getThreads();
-    return threads;
-  } catch (error) {
-    return rejectWithValue(error.info());
-  }
-});
-
-export const addThread = createAsyncThunk(
-  'threads/add',
-  async (newThread, { rejectWithValue }) => {
-    try {
-      const { thread, message } = await api.createThread(newThread);
-      const toastMessage = `${message} successfully`;
-      toast.success(toastMessage);
-      return thread;
-    } catch (error) {
-      return rejectWithValue(error.info());
-    }
-  }
-);
-
-export const upVoteThreads = createAsyncThunk('threads/upVote', async (threadId, { rejectWithValue, dispatch, getState }) => {
-  const authUser = getState().authUser.data;
-  try {
-    dispatch(upVoteSync({ threadId, userId: authUser.id }));
-    await api.setVoteThread(threadId, VoteType.UP_VOTE);
-  } catch (error) {
-    toast.error(error.message);
-    return rejectWithValue({ threadId, userId: authUser.id, error: error.info() });
-  }
-});
-
-export const downVoteThreads = createAsyncThunk('threads/downVote', async (threadId, { rejectWithValue, dispatch, getState }) => {
-  const authUser = getState().authUser.data;
-  try {
-    dispatch(downVoteSync({ threadId, userId: authUser.id }));
-    await api.setVoteThread(threadId, VoteType.DOWN_VOTE);
-  } catch (error) {
-    toast.error(error.message);
-    return rejectWithValue({ threadId, userId: authUser.id, error: error.info() });
-  }
-});
-
-export const neutralVoteThreads = createAsyncThunk('threads/neutralVote', async (threadId, { rejectWithValue, dispatch, getState }) => {
-  const authUser = getState().authUser.data;
-  const { upVotesBy, downVotesBy } = getState().threads.data.find((thread) => thread.id === threadId);
-  try {
-    dispatch(neutralVoteSync({ threadId, userId: authUser.id }));
-    await api.setVoteThread(threadId, VoteType.NEUTRAL_VOTE);
-  } catch (error) {
-    toast.error(error.message);
-    return rejectWithValue({ threadId, upVotesBy, downVotesBy, error: error.info() });
-  }
-});
 
 const initialState = {
   data: [],

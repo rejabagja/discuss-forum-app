@@ -1,13 +1,13 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { setSelectedCategory } from '@states/categories';
+import { setSelectedCategory } from '@states/slices/categories';
 import {
+  fetchThreads,
   upVoteThreads,
   downVoteThreads,
   neutralVoteThreads,
-} from '@states/threads';
+} from '@states/thunks/threads';
+import { fetchUsers } from '@states/thunks/users';
 import { useFetchData } from '@hooks';
-import { fetchUsers } from '@states/users';
-import { fetchThreads } from '@states/threads';
 import { showAuthRequiredToast } from '@utils';
 
 

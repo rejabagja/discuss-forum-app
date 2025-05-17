@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchThreads } from '@states/threads';
+import { useDispatch, useSelector } from 'react-redux';
 import { useFetchData } from '@hooks';
 import { ErrorType } from '@constants';
 import { useInput, useContentEditable } from '@hooks/index';
-import { useDispatch, useSelector } from 'react-redux';
-import { addThread, resetCreateStatus, clearError as clearThreadCreateError } from '@states/threads';
+import { fetchThreads, addThread } from '@states/thunks/threads';
+import { resetCreateStatus, clearError as clearThreadCreateError } from '@states/slices/threads';
 
 
 const useThreadCreate = () => {

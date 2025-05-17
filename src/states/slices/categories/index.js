@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchThreads } from '@states/threads';
+import { fetchThreads } from '@states/thunks/threads';
 
 
 const initialState = {

@@ -1,22 +1,6 @@
-import api from '@utils/api';
-import { toast } from 'react-toastify';
-import { preloadProcess } from '@states/preload';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import { login, preloadProcess } from '@states/thunks';
 
-export const login = createAsyncThunk(
-  'authUser/login',
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const { token } = await api.login(credentials);
-      api.setAccessToken(token);
-      toast.success('Login successfully');
-      const { user } = await api.getOwnProfile();
-      return user;
-    } catch (error) {
-      return rejectWithValue(error.info());
-    }
-  }
-);
 
 const initialState = {
   data: null,
@@ -32,7 +16,6 @@ const authUserSlice = createSlice({
       state.data = action.payload;
     },
     clearAuthUser: () => {
-      api.removeAccessToken('');
       return initialState;
     },
     clearError: (state) => {

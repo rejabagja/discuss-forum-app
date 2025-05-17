@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { preloadProcess } from '@states/preload';
+import { preloadProcess } from '@states/thunks';
 import LayoutApp from '@layouts/App';
 import PageNotFound from '@pages/not-found';
 import PageThreadCreate from '@pages/thread-create';

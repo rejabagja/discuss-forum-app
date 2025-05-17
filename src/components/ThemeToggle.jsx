@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { BiMoon, BiSun } from 'react-icons/bi';
-import { toggleTheme } from '@states/theme';
+import { toggleTheme } from '@states/slices/theme';
 
 const ThemeToggle = () => {
   const theme = useSelector(({ theme }) => theme);

@@ -1,14 +1,13 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchThread } from '@states/thread-detail';
 import { useContentEditable, useFetchData } from '@hooks';
 import {
   upVoteThread, downVoteThread,
   neutralVoteThread, upVoteComment,
   downVoteComment, neutralVoteComment,
-  createComment
-} from '@states/thread-detail';
-import { useEffect } from 'react';
+  createComment, fetchThread
+} from '@states/thunks/thread_detail';
 import { showAuthRequiredToast } from '@utils';
 
 

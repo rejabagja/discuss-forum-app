@@ -1,6 +1,6 @@
-import { fetchLeaderboards } from '@states/leaderboards';
 import { useSelector } from 'react-redux';
 import { useFetchData } from '@hooks';
+import { fetchLeaderboards } from '@states/thunks';
 
 const useLeaderboards = () => {
   const { error: fetchDataError, isLoading: fetchDataLoading } = useFetchData([fetchLeaderboards]);

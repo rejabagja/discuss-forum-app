@@ -1,9 +1,9 @@
-import { useInput } from '@hooks/index';
-import { useDispatch, useSelector } from 'react-redux';
-import { createUser } from '@states/users';
 import { useEffect } from 'react';
-import { clearError as clearRegisterError } from '@states/users';
+import { useDispatch, useSelector } from 'react-redux';
+import { useInput } from '@hooks';
 import { ErrorType } from '@constants';
+import { createUser } from '@states/thunks/users';
+import { clearError as clearRegisterError } from '@states/slices/users';
 
 
 const useRegister = () => {
