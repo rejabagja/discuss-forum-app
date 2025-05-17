@@ -82,3 +82,10 @@ export const showAuthRequiredToast = (action) => {
   );
   toast.info(toastContent);
 };
+
+export const getInitialTheme = () => {
+  const theme = localStorage.getItem('theme');
+  return ['light', 'dark'].includes(theme) ? theme : 'light';
+};
+
+export const setAppTheme = (theme) => localStorage.setItem('theme', theme);
