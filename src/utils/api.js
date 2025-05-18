@@ -1,5 +1,5 @@
 import { AppError } from './index';
-import { ErrorType, VoteType, BASE_URL } from '@constants';
+import { ErrorType, BASE_URL } from '@constants';
 
 
 function setAccessToken(token) {
@@ -14,18 +14,14 @@ function removeAccessToken() {
   localStorage.removeItem('token');
 }
 
-async function register({ name, email, password }) {
+async function register(credentials) {
   try {
     const response = await fetch(`${BASE_URL}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-      }),
+      body: JSON.stringify(credentials),
     });
     const { status, message, data } = await response.json();
     if (status !== 'success' || response.status >= 400) {
@@ -37,14 +33,14 @@ async function register({ name, email, password }) {
   }
 }
 
-async function login({ email, password }) {
+async function login(credentials) {
   try {
     const response = await fetch(`${BASE_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify(credentials)
     });
     const { status, message, data } = await response.json();
     if (status !== 'success' || response.status >= 400) {
@@ -93,15 +89,11 @@ async function getOwnProfile() {
   }
 }
 
-async function createThread({ title, body, category = '' }) {
+async function createThread(payload) {
   try {
     const response = await _fetchWithToken(`${BASE_URL}/threads`, {
       method: 'POST',
-      body: JSON.stringify({
-        title,
-        body,
-        category
-      })
+      body: JSON.stringify(payload)
     });
     const { status, message, data } = await response.json();
     if (status !== 'success' || response.status >= 400) {
@@ -139,8 +131,9 @@ async function getThreadDetail(threadId) {
   }
 }
 
-async function createComment({ threadId, content }) {
+async function createComment(payload) {
   try {
+    const { threadId, content } = payload;
     const response = await _fetchWithToken(`${BASE_URL}/threads/${threadId}/comments`, {
       method: 'POST',
       body: JSON.stringify({
@@ -173,8 +166,9 @@ async function setVoteThread(threadId, voteType) {
   }
 }
 
-async function setVoteComment({ threadId, commentId, voteType }) {
+async function setVoteComment(payload) {
   try {
+    const { threadId, commentId, voteType } = payload;
     const response = await _fetchWithToken(`${BASE_URL}/threads/${threadId}/comments/${commentId}/${voteType}`, {
       method: 'POST'
     });

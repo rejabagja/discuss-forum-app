@@ -27,7 +27,7 @@ const FooterApp = () => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        api.removeAccessToken('');
+        api.removeAccessToken();
         dispatch(clearAuthUser());
         toast.success('You have been logged out.');
       }
