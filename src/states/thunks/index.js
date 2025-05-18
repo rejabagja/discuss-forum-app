@@ -20,6 +20,8 @@ export const login = createAsyncThunk(
 
 export const preloadProcess = createAsyncThunk('preload/process', async () => {
   try {
+    const token = api.getAccessToken();
+    if (!token) return;
     const { user } = await api.getOwnProfile();
     return user;
   } catch (error) {

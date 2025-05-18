@@ -6,11 +6,15 @@ import { clearAuthUser } from '@states/slices/auth-user';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import api from '@utils/api';
+import { useOnline } from '@hooks';
 
 const FooterApp = () => {
-  const authUser = useSelector(({ authUser }) => authUser.data);
   const dispatch = useDispatch();
+  const isOnline = useOnline();
+  const authUser = useSelector(({ authUser }) => authUser.data);
+
   const onLogout = () => {
+    if (!isOnline) return;
     Swal.fire({
       title: 'Are you sure?',
       text: 'You will be logged out!',

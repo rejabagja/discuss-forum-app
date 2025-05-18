@@ -49,3 +49,20 @@ export const useFetchData = (actions) => { // actions: (() => any)[]
 
   return { error, isLoading };
 };
+
+export const useOnline = () => {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const onOnline = () => setIsOnline(true);
+  const onOffline = () => setIsOnline(false);
+
+  useEffect(() => {
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+    };
+  }, []);
+
+  return isOnline;
+};
