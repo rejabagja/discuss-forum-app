@@ -50,6 +50,9 @@ const threadsSlice = createSlice({
     resetCreateStatus: (state) => {
       state.createStatus = false;
     },
+    setThreads: (state, action) => {
+      state.data = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -122,5 +125,5 @@ const threadsSlice = createSlice({
   },
 });
 
-export const { upVote, downVote, neutralVote, clearError, resetCreateStatus } = threadsSlice.actions;
+export const { upVote, downVote, neutralVote, clearError, resetCreateStatus, setThreads } = threadsSlice.actions;
 export default threadsSlice.reducer;

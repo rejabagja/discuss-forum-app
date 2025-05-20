@@ -1,19 +1,19 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedCategory } from '@states/slices/categories';
 import {
-  fetchThreads,
   upVoteThreads,
   downVoteThreads,
   neutralVoteThreads,
 } from '@states/thunks/threads';
-import { fetchUsers } from '@states/thunks/users';
-import { useFetchData } from '@hooks';
 import { showAuthRequiredToast } from '@utils';
+import { useEffect, useState } from 'react';
+import { fetchUsersThreads } from '@states/thunks';
 
 
 const useHome = () => {
-  const { error: fetchDataError, isLoading: fetchDataLoading } = useFetchData([fetchUsers, fetchThreads]);
   const dispatch = useDispatch();
+  const [fetchDataError, setFetchDataError] = useState(null);
+  const [fetchDataLoading, setFetchDataLoading] = useState(true);
   const users = useSelector(({ users }) => users.data);
   const threads = useSelector(({ threads }) => threads.data);
   const authUser = useSelector(({ authUser }) => authUser.data);
@@ -26,38 +26,51 @@ const useHome = () => {
   }));
 
   const toggleSelectedCategory = (category) => {
-    if (category === selectedCategory) {
-      dispatch(setSelectedCategory(null));
-    } else {
-      dispatch(setSelectedCategory(category));
-    }
+    dispatch(
+      category === selectedCategory
+        ? setSelectedCategory(null)
+        : setSelectedCategory(category)
+    );
   };
 
   const handleUpVote = (thread) => {
     if (!authUser) return showAuthRequiredToast('thread');
-    if (thread.upVotesBy.includes(authUser.id)) {
-      dispatch(
-        neutralVoteThreads(thread.id)
-      );
-    } else {
-      dispatch(
-        upVoteThreads(thread.id)
-      );
-    }
+    dispatch(
+      thread.upVotesBy.includes(authUser.id)
+        ? neutralVoteThreads(thread.id)
+        : upVoteThreads(thread.id)
+    );
   };
 
   const handleDownVote = (thread) => {
     if (!authUser) return showAuthRequiredToast('thread');
-    if (thread.downVotesBy.includes(authUser.id)) {
-      dispatch(
-        neutralVoteThreads(thread.id)
-      );
-    } else {
-      dispatch(
-        downVoteThreads(thread.id)
-      );
-    }
+    dispatch(
+      thread.downVotesBy.includes(authUser.id)
+        ? neutralVoteThreads(thread.id)
+        : downVoteThreads(thread.id)
+    );
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const promise = dispatch(fetchUsersThreads());
+    promise
+      .unwrap()
+      .catch((error) => {
+        if (isMounted && error.name !== 'AbortError') {
+          setFetchDataError(error);
+        }
+      })
+      .finally(() => {
+        if (isMounted) setFetchDataLoading(false);
+      });
+
+    return () => {
+      promise.abort();
+      isMounted = false;
+    };
+  }, [dispatch]);
 
   return {
     authUser, threadList,

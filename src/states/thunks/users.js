@@ -3,16 +3,22 @@ import api from '@utils/api';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+import { APIError } from '@utils';
 
 
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
-  async (_, { rejectWithValue }) => {
+  async (signal) => {
     try {
-      const { users } = await api.getUsers();
+      const { data: { users } } = await api.getUsers({ signal });
       return users;
     } catch (error) {
-      return rejectWithValue(error.info());
+      console.dir(error);
+      if (error.name === 'AbortError') {
+        throw new APIError('Request aborted', 408);
+      }
+      throw error;
+      // return rejectWithValue(error.info());
     }
   }
 );

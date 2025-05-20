@@ -7,12 +7,17 @@ import { upVote, downVote, neutralVote } from '@states/slices/threads';
 
 export const fetchThreads = createAsyncThunk(
   'threads/fetchThreads',
-  async (_, { rejectWithValue }) => {
+  async (signal, { rejectWithValue }) => {
     try {
-      const { threads } = await api.getThreads();
+      const { data: { threads } } = await api.getThreads({ signal });
       return threads;
     } catch (error) {
-      return rejectWithValue(error.info());
+      if (error.name === 'AbortError') return;
+      return rejectWithValue({
+        name: error.name,
+        message: error.message,
+        statusCode: error.statusCode,
+      });
     }
   }
 );
