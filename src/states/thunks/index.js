@@ -35,7 +35,7 @@ export const preloadProcess = createAsyncThunk('preload/process', async () => {
   }
 });
 
-export const fetchCurrentUser = createAsyncThunk('auth/fetchCurrentUser', async (externalSignal = null, thunkApi) => {
+export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', async (externalSignal = null, thunkApi) => {
   const { dispatch, rejectWithValue, signal } = thunkApi;
   const token = api.getAccessToken();
   try {

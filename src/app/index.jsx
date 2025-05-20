@@ -1,14 +1,14 @@
 import AppRoutes from '@routes';
 import LayoutApp from '@layouts/App';
-import AuthProvider from '@components/AuthProvider';
+import PreloadDataProvider from '@components/PreloadDataProvider';
 
 function App() {
   return (
-    <AuthProvider>
+    <PreloadDataProvider>
       <LayoutApp>
         <AppRoutes />
       </LayoutApp>
-    </AuthProvider>
+    </PreloadDataProvider>
   );
 }
 

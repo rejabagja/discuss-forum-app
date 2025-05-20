@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchCurrentUser } from '@states/thunks';
+import { fetchPreloadData } from '@states/thunks';
 import PropTypes from 'prop-types';
 
-const AuthProvider = ({ children }) => {
+const PreloadDataProvider = ({ children }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,7 +11,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     let isMounted = true;
 
-    const promise = dispatch(fetchCurrentUser());
+    const promise = dispatch(fetchPreloadData());
     promise
       .unwrap()
       .catch((error) => {
@@ -32,8 +32,8 @@ const AuthProvider = ({ children }) => {
   return children;
 };
 
-AuthProvider.propTypes = {
+PreloadDataProvider.propTypes = {
   children: PropTypes.node,
 };
 
-export default AuthProvider;
+export default PreloadDataProvider;
