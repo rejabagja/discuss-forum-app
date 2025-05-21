@@ -6,23 +6,6 @@ import { Link } from 'react-router-dom';
 import { APIError } from '@utils';
 
 
-export const fetchUsers = createAsyncThunk(
-  'users/fetchUsers',
-  async (signal) => {
-    try {
-      const { data: { users } } = await api.getUsers({ signal });
-      return users;
-    } catch (error) {
-      console.dir(error);
-      if (error.name === 'AbortError') {
-        throw new APIError('Request aborted', 408);
-      }
-      throw error;
-      // return rejectWithValue(error.info());
-    }
-  }
-);
-
 export const createUser = createAsyncThunk(
   'users/createUser',
   async (credentials, { rejectWithValue }) => {

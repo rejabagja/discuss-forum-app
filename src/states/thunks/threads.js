@@ -5,23 +5,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { upVote, downVote, neutralVote } from '@states/slices/threads';
 
 
-export const fetchThreads = createAsyncThunk(
-  'threads/fetchThreads',
-  async (signal, { rejectWithValue }) => {
-    try {
-      const { data: { threads } } = await api.getThreads({ signal });
-      return threads;
-    } catch (error) {
-      if (error.name === 'AbortError') return;
-      return rejectWithValue({
-        name: error.name,
-        message: error.message,
-        statusCode: error.statusCode,
-      });
-    }
-  }
-);
-
 export const addThread = createAsyncThunk(
   'threads/add',
   async (newThread, { rejectWithValue }) => {

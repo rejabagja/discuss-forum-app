@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { login, preloadProcess } from '@states/thunks';
+import { login } from '@states/thunks';
 
 
 const initialState = {
@@ -37,11 +37,7 @@ const authUserSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       });
-
-    builder.addCase(preloadProcess.fulfilled, (state, action) => {
-      state.data = action.payload;
-    });
-  },
+  }
 });
 
 export const { setAuthUser, clearAuthUser, clearError } = authUserSlice.actions;

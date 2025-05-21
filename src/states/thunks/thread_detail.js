@@ -16,8 +16,8 @@ import { hideLoading, showLoading } from 'react-redux-loading-bar';
 
 export const fetchThread = createAsyncThunk(
   'threadDetail/fetchThread',
-  async (payload, thunkApi) => {
-    const { threadId, externalSignal } = payload;
+  async (options = {}, thunkApi) => {
+    const { threadId, externalSignal } = options;
     const { rejectWithValue, signal, dispatch } = thunkApi;
     try {
       dispatch(showLoading());

@@ -12,14 +12,10 @@ const PageThreadCreate = () => {
     onChangeCategory,
     handleCreateThread,
     threadCreateError,
-    fetchDataError,
-    fetchDataLoading,
     createLoading,
     ErrorType,
   } = useThreadCreate();
 
-  if (fetchDataError) return <FetchDataError error={fetchDataError} />;
-  if (fetchDataLoading) return null;
   return (
     <section className="thread-create-page">
       <h2 className="font-semibold text-xl mb-2 text-center">

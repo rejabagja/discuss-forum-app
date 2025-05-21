@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
-  fetchThreads,
   addThread,
   upVoteThreads,
   downVoteThreads,
@@ -55,17 +54,6 @@ const threadsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchThreads.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(fetchThreads.fulfilled, (state, action) => {
-        state.data = action.payload;
-      })
-      .addCase(fetchThreads.rejected, (state, action) => {
-        state.error = action.payload;
-      });
-
     builder
       .addCase(addThread.pending, (state) => {
         state.isLoading = true;

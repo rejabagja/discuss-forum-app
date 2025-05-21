@@ -6,6 +6,7 @@ import { setAuthUser } from '@states/slices/auth-user';
 import { setThreads } from '@states/slices/threads';
 import { setUsers } from '@states/slices/users';
 import { setCategories } from '@states/slices/categories';
+import { setLeaderboards } from '@states/slices/leaderboards';
 import { hideLoading, showLoading } from 'react-redux-loading-bar';
 
 
@@ -24,19 +25,9 @@ export const login = createAsyncThunk(
   }
 );
 
-export const preloadProcess = createAsyncThunk('preload/process', async () => {
-  try {
-    const token = api.getAccessToken();
-    if (!token) return;
-    const { user } = await api.getOwnProfile();
-    return user;
-  } catch (error) {
-    console.error(error.message);
-  }
-});
-
-export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', async (externalSignal = null, thunkApi) => {
+export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', async (options = {}, thunkApi) => {
   const { dispatch, rejectWithValue, signal } = thunkApi;
+  const { externalSignal } = options;
   const token = api.getAccessToken();
   try {
     if (!token) {
@@ -61,21 +52,33 @@ export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', asy
 });
 
 export const fetchLeaderboards = createAsyncThunk(
-  'leaderboards/receive',
-  async (_, { rejectWithValue }) => {
+  'leaderboards/fetchLeaderboards',
+  async (options = {}, thunkApi) => {
+    const { rejectWithValue, dispatch, signal } = thunkApi;
+    const { externalSignal } = options;
     try {
-      const { leaderboards } = await api.getLeaderBoards();
-      return leaderboards;
+      dispatch(showLoading());
+      const { data: { leaderboards } } = await api.getLeaderBoards({ signal: externalSignal || signal });
+      dispatch(setLeaderboards(leaderboards));
     } catch (error) {
-      return rejectWithValue(error.info());
+      if (error.name === 'AbortError') return;
+
+      return rejectWithValue({
+        name: error.name,
+        message: error.message,
+        statusCode: error.statusCode,
+      });
+    } finally {
+      dispatch(hideLoading());
     }
   }
 );
 
 export const fetchUsersThreads = createAsyncThunk(
   'combine/fetchUsersThreads',
-  async (externalSignal = null, thunkApi) => {
+  async (options = {}, thunkApi) => {
     const { dispatch, rejectWithValue, signal } = thunkApi;
+    const { externalSignal } = options;
     try {
       dispatch(showLoading());
       const { data: { threads } } = await api.getThreads({ signal: externalSignal || signal });
