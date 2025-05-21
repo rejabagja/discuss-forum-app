@@ -21,7 +21,12 @@ const PageThreadDetail = () => {
   } = useThreadDetail();
 
   if (fetchDataError) return <FetchDataError error={fetchDataError} />;
-  if (fetchDataLoading) return null;
+  if (fetchDataLoading)
+    return (
+      <section className="detail-page-loader h-screen flex-1 flex flex-col justify-center">
+        <span className="loading loading-bars loading-md lg:loading-lg mx-auto text-accent-darker"></span>
+      </section>
+    );
   return (
     <section className="detail-page">
       <ThreadDetailContent

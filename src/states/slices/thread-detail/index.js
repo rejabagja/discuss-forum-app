@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
-  fetchThread,
   createComment,
   upVoteThread,
   downVoteThread,
@@ -70,21 +69,12 @@ const threadDetailSlice = createSlice({
       if (!comment) return;
       comment.upVotesBy = comment.upVotesBy.filter((id) => id !== userId);
       comment.downVotesBy = comment.downVotesBy.filter((id) => id !== userId);
-    }
+    },
+    setThreadData: (state, action) => {
+      state.data = action.payload;
+    },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchThread.pending, (state) => {
-        state.data = null;
-        state.error = null;
-      })
-      .addCase(fetchThread.fulfilled, (state, action) => {
-        state.data = action.payload;
-      })
-      .addCase(fetchThread.rejected, (state, action) => {
-        state.error = action.payload;
-      });
-
     builder
       .addCase(createComment.pending, (state) => {
         state.error = null;
@@ -178,5 +168,5 @@ const threadDetailSlice = createSlice({
 });
 
 
-export const { upVote, downVote, neutralVote, upComment, downComment, neutralComment } = threadDetailSlice.actions;
+export const { upVote, downVote, neutralVote, upComment, downComment, neutralComment, setThreadData } = threadDetailSlice.actions;
 export default threadDetailSlice.reducer;

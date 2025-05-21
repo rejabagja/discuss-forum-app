@@ -9,19 +9,29 @@ import {
   upComment,
   downComment,
   neutralComment,
+  setThreadData,
 } from '@states/slices/thread-detail';
+import { hideLoading, showLoading } from 'react-redux-loading-bar';
 
 
 export const fetchThread = createAsyncThunk(
   'threadDetail/fetchThread',
-  async (threadId, { rejectWithValue }) => {
+  async (payload, thunkApi) => {
+    const { threadId, externalSignal } = payload;
+    const { rejectWithValue, signal, dispatch } = thunkApi;
     try {
-      const { detailThread } = await api.getThreadDetail(threadId);
-      return detailThread;
+      dispatch(showLoading());
+      const { data: { detailThread } } = await api.getThreadDetail(threadId, { signal: externalSignal || signal });
+      dispatch(setThreadData(detailThread));
     } catch (error) {
-      if (error.message === 'thread tidak ditemukan')
-        error.message = 'Thread not found';
-      return rejectWithValue(error.info());
+      if (error.name === 'AbortError') return;
+      return rejectWithValue({
+        name: error.name,
+        message: error.message,
+        statusCode: error.statusCode,
+      });
+    } finally {
+      dispatch(hideLoading());
     }
   }
 );
