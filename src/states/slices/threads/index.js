@@ -1,9 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {
-  upVoteThreads,
-  downVoteThreads,
-  neutralVoteThreads,
-} from '@states/thunks/threads';
 
 
 const initialState = {
@@ -41,50 +36,15 @@ const threadsSlice = createSlice({
     },
     setThreads: (state, action) => {
       state.data = action.payload;
-    }
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(upVoteThreads.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(upVoteThreads.rejected, (state, action) => {
-        const { threadId, userId, error } = action.payload;
-        const thread = state.data.find((thread) => thread.id === threadId);
-        if (thread) {
-          thread.upVotesBy = thread.upVotesBy.filter((id) => id !== userId);
-          state.error = error;
-        }
-      });
-
-    builder
-      .addCase(downVoteThreads.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(downVoteThreads.rejected, (state, action) => {
-        const { threadId, userId, error } = action.payload;
-        const thread = state.data.find((thread) => thread.id === threadId);
-        if (thread) {
-          thread.downVotesBy = thread.downVotesBy.filter((id) => id !== userId);
-          state.error = error;
-        }
-      });
-
-    builder
-      .addCase(neutralVoteThreads.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(neutralVoteThreads.rejected, (state, action) => {
-        const { threadId, upVotesBy, downVotesBy, error } = action.payload;
-        const thread = state.data.find((thread) => thread.id === threadId);
-        if (thread) {
-          thread.upVotesBy = upVotesBy;
-          thread.downVotesBy = downVotesBy;
-          state.error = error;
-        }
-      });
-  },
+    },
+    threadRollback: (state, action) => {
+      const targetIndex = state.data.findIndex((thread) => thread.id === action.payload.id);
+      if (targetIndex !== -1) {
+        state.data[targetIndex] = action.payload;
+      }
+    },
+  }
 });
 
-export const { upVote, downVote, neutralVote, setThreads } = threadsSlice.actions;
+export const { upVote, downVote, neutralVote, setThreads, threadRollback } = threadsSlice.actions;
 export default threadsSlice.reducer;

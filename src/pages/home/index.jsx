@@ -9,8 +9,8 @@ import ThreadItemSkeleton from '@components/ThreadItemSkeleton';
 
 const PageHome = () => {
   const {
-    authUser,
-    threadList,
+    isAuthed,
+    filteredThreads,
     categories,
     selectedCategory,
     handleDownVote,
@@ -19,10 +19,6 @@ const PageHome = () => {
     fetchDataError,
     fetchDataLoading,
   } = useHome();
-
-  const filteredThreadList = selectedCategory
-    ? threadList.filter((thread) => thread.category === selectedCategory)
-    : threadList;
 
   if (fetchDataError) return <FetchDataError error={fetchDataError} />;
 
@@ -42,17 +38,17 @@ const PageHome = () => {
 
       <div className="home-page__content">
         <h2 className="font-semibold text-xl mb-2">Open Discussions</h2>
-        {fetchDataLoading && filteredThreadList.length === 0 && (
+        {fetchDataLoading && filteredThreads.length === 0 && (
           <ThreadItemSkeleton />
         )}
         <ThreadList
-          threads={filteredThreadList}
+          threads={filteredThreads}
           handleDownVote={handleDownVote}
           handleUpVote={handleUpVote}
         />
       </div>
 
-      {authUser && (
+      {isAuthed && (
         <Link
           className="btn btn-circle btn-accent shadow-lg text-2xl fixed bottom-20 right-5"
           title="create new thread"
