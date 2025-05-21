@@ -11,9 +11,8 @@ const PageRegister = () => {
     password,
     onChangePassword,
     handleRegister,
-    registerLoading,
+    loading,
     error,
-    ErrorType,
   } = useRegister();
   return (
     <AuthPageWrapper
@@ -23,14 +22,14 @@ const PageRegister = () => {
     >
       <FormRegister
         onSubmitHandler={handleRegister}
-        error={error?.type === ErrorType.CREATE_USER ? error.message : null}
+        error={error}
         name={name}
         onChangeName={onChangeName}
         email={email}
         onChangeEmail={onChangeEmail}
         password={password}
         onChangePassword={onChangePassword}
-        isLoading={registerLoading}
+        isLoading={loading}
       />
     </AuthPageWrapper>
   );

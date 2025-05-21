@@ -45,14 +45,14 @@ async function _fetchWithToken(url, options = {}) {
 };
 
 // fetcher
-async function register(credentials, options = {}) {
+async function register(payload, options = {}) {
   const response = await fetch(`${BASE_URL}/register`, {
     ...options,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(credentials),
+    body: JSON.stringify(payload),
   });
   if (!response.ok) {
     await handleResponseError(response);
