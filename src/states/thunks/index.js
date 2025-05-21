@@ -1,5 +1,4 @@
 import api from '@utils/api';
-import { toast } from 'react-toastify';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppError } from '@utils';
 import { setAuthUser } from '@states/slices/auth-user';
@@ -9,21 +8,6 @@ import { setCategories } from '@states/slices/categories';
 import { setLeaderboards } from '@states/slices/leaderboards';
 import { hideLoading, showLoading } from 'react-redux-loading-bar';
 
-
-export const login = createAsyncThunk(
-  'authUser/login',
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const { token } = await api.login(credentials);
-      api.setAccessToken(token);
-      toast.success('Login successfully');
-      const { user } = await api.getOwnProfile();
-      return user;
-    } catch (error) {
-      return rejectWithValue(error.info());
-    }
-  }
-);
 
 export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', async (options = {}, thunkApi) => {
   const { dispatch, rejectWithValue, signal } = thunkApi;

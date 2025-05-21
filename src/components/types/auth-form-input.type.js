@@ -4,7 +4,7 @@ import { classNameType, nullableString } from './index';
 const FormShape = {
   onSubmitHandler: PropTypes.func.isRequired,
   error: nullableString,
-  isLoading: PropTypes.bool.isRequired
+  isLoading: PropTypes.bool
 };
 
 const LoginInputShape = {

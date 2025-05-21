@@ -33,10 +33,14 @@ const FormLogin = ({
         className="btn btn-accent w-full"
         disabled={isLoading}
       >
-        {isLoading && (
-          <span className="loading loading-spinner loading-xs"></span>
+        {isLoading ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="loading loading-spinner loading-xs" />
+            <span>Logging in...</span>
+          </span>
+        ) : (
+          'Login'
         )}
-        {isLoading ? 'logging in...' : 'Login'}
       </button>
     </AuthForm>
   );
