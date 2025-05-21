@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
-  addThread,
   upVoteThreads,
   downVoteThreads,
   neutralVoteThreads,
@@ -9,9 +8,6 @@ import {
 
 const initialState = {
   data: [],
-  error: null,
-  isLoading: false,
-  createStatus: false,
 };
 
 const threadsSlice = createSlice({
@@ -43,34 +39,11 @@ const threadsSlice = createSlice({
       thread.upVotesBy = thread.upVotesBy.filter((id) => id !== userId);
       thread.downVotesBy = thread.downVotesBy.filter((id) => id !== userId);
     },
-    clearError: (state) => {
-      state.error = null;
-    },
-    resetCreateStatus: (state) => {
-      state.createStatus = false;
-    },
     setThreads: (state, action) => {
       state.data = action.payload;
-    },
+    }
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(addThread.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-        state.createStatus = false;
-      })
-      .addCase(addThread.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.data.unshift(action.payload);
-        state.createStatus = true;
-      })
-      .addCase(addThread.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-        state.createStatus = false;
-      });
-
     builder
       .addCase(upVoteThreads.pending, (state) => {
         state.error = null;
@@ -113,5 +86,5 @@ const threadsSlice = createSlice({
   },
 });
 
-export const { upVote, downVote, neutralVote, clearError, resetCreateStatus, setThreads } = threadsSlice.actions;
+export const { upVote, downVote, neutralVote, setThreads } = threadsSlice.actions;
 export default threadsSlice.reducer;

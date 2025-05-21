@@ -1,6 +1,6 @@
 import { useThreadCreate } from './hooks';
 import FormThreadCreate from '@components/FormThreadCreate';
-import FetchDataError from '@components/FetchDataError';
+import { Navigate } from 'react-router-dom';
 
 const PageThreadCreate = () => {
   const {
@@ -11,10 +11,12 @@ const PageThreadCreate = () => {
     category,
     onChangeCategory,
     handleCreateThread,
-    threadCreateError,
-    createLoading,
-    ErrorType,
+    error,
+    loading,
+    isCreateSucceded,
   } = useThreadCreate();
+
+  if (isCreateSucceded) return <Navigate to="/" />;
 
   return (
     <section className="thread-create-page">
@@ -30,12 +32,8 @@ const PageThreadCreate = () => {
           category={category}
           onChangeCategory={onChangeCategory}
           handleCreateThread={handleCreateThread}
-          error={
-            threadCreateError?.type === ErrorType.CREATE_THREAD
-              ? threadCreateError.message
-              : null
-          }
-          isLoading={createLoading}
+          error={error}
+          isLoading={loading}
         />
       </div>
     </section>

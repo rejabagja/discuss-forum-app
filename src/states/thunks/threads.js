@@ -5,16 +5,24 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { upVote, downVote, neutralVote } from '@states/slices/threads';
 
 
-export const addThread = createAsyncThunk(
-  'threads/add',
-  async (newThread, { rejectWithValue }) => {
+export const createThread = createAsyncThunk(
+  'threads/create',
+  async (payloads, thunkApi) => {
+    const { rejectWithValue } = thunkApi;
+    const { payload, signal } = payloads;
     try {
-      const { thread, message } = await api.createThread(newThread);
+      const { data: { thread }, message } = await api.createThread(payload, { signal: signal || thunkApi.signal });
       const toastMessage = `${message} successfully`;
       toast.success(toastMessage);
       return thread;
     } catch (error) {
-      return rejectWithValue(error.info());
+      if (error.name === 'AbortError') {
+        toast.error('Request was aborted');
+      };
+      return rejectWithValue({
+        name: error.name,
+        message: error.message,
+      });
     }
   }
 );
