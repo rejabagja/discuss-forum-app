@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchPreloadData } from '@states/thunks';
+import FetchDataError from '@components/FetchDataError';
 import PropTypes from 'prop-types';
 
 const PreloadDataProvider = ({ children }) => {
@@ -11,23 +12,23 @@ const PreloadDataProvider = ({ children }) => {
   useEffect(() => {
     let isMounted = true;
 
-    const promise = dispatch(fetchPreloadData());
-    promise
+    const fetchPreloadDataController = new AbortController();
+    dispatch(fetchPreloadData({ signal: fetchPreloadDataController.signal }))
       .unwrap()
       .catch((error) => {
-        if (isMounted && error.name !== 'AbortError') setError(error);
+        if (isMounted) setError(error);
       })
       .finally(() => {
         if (isMounted) setLoading(false);
       });
 
     return () => {
-      promise?.abort();
+      fetchPreloadDataController?.abort();
       isMounted = false;
     };
   }, [dispatch]);
 
-  if (error) return <p>{error.message}</p>;
+  if (error) return <FetchDataError error={error} />;
   if (loading) return null;
   return children;
 };

@@ -16,15 +16,21 @@ import { hideLoading, showLoading } from 'react-redux-loading-bar';
 
 export const fetchThread = createAsyncThunk(
   'threadDetail/fetchThread',
-  async (options = {}, thunkApi) => {
-    const { threadId, externalSignal } = options;
-    const { rejectWithValue, signal, dispatch } = thunkApi;
+  async (payloads = {}, thunkApi) => {
+    const { threadId, signal } = payloads;
+    const { rejectWithValue, dispatch } = thunkApi;
     try {
       dispatch(showLoading());
-      const { data: { detailThread } } = await api.getThreadDetail(threadId, { signal: externalSignal || signal });
+      const { data: { detailThread } } = await api.getThreadDetail(threadId, { signal });
       dispatch(setThreadData(detailThread));
     } catch (error) {
-      if (error.name === 'AbortError') return;
+      if (error.name === 'AbortError') {
+        return rejectWithValue({
+          name: error.name,
+          message: 'Request was aborted',
+          statusCode: 408,
+        });
+      }
       return rejectWithValue({
         name: error.name,
         message: error.message,
@@ -57,7 +63,7 @@ export const createComment = createAsyncThunk(
 export const upVoteThread = createAsyncThunk(
   'threadDetail/upVote',
   async (threadId, { dispatch, rejectWithValue, getState }) => {
-    const userId = getState().authUser.data.id;
+    const userId = getState().auth.user.id;
     try {
       dispatch(upVote(userId));
       await api.setVoteThread(threadId, VoteType.UP_VOTE);
@@ -71,7 +77,7 @@ export const upVoteThread = createAsyncThunk(
 export const downVoteThread = createAsyncThunk(
   'threadDetail/downVote',
   async (threadId, { dispatch, rejectWithValue, getState }) => {
-    const userId = getState().authUser.data.id;
+    const userId = getState().auth.user.id;
     try {
       dispatch(downVote(userId));
       await api.setVoteThread(threadId, VoteType.DOWN_VOTE);
@@ -86,7 +92,7 @@ export const neutralVoteThread = createAsyncThunk(
   'threadDetail/neutralVote',
   async (threadId, { dispatch, rejectWithValue, getState }) => {
     const {
-      authUser: { data: authUser },
+      auth: { user: authUser },
       threadDetail,
     } = getState();
     try {
@@ -104,7 +110,7 @@ export const upVoteComment = createAsyncThunk(
   'threadDetail/upVoteComment',
   async (commentId, { dispatch, rejectWithValue, getState }) => {
     const {
-      authUser: { data: authUser },
+      auth: { user: authUser },
       threadDetail,
     } = getState();
     try {
@@ -129,7 +135,7 @@ export const downVoteComment = createAsyncThunk(
   'threadDetail/downVoteComment',
   async (commentId, { dispatch, rejectWithValue, getState }) => {
     const {
-      authUser: { data: authUser },
+      auth: { user: authUser },
       threadDetail,
     } = getState();
     try {
@@ -154,7 +160,7 @@ export const neutralVoteComment = createAsyncThunk(
   'threadDetail/neutralVoteComment',
   async (commentId, { dispatch, rejectWithValue, getState }) => {
     const {
-      authUser: { data: authUser },
+      auth: { user: authUser },
       threadDetail,
     } = getState();
     try {

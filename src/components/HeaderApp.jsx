@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import LoadingBar from '@components/LoadingBar';
 
 const HeaderApp = () => {
-  const authUser = useSelector(({ authUser }) => authUser.data);
+  const authUser = useSelector(({ auth }) => auth.user);
 
   return (
     <header className="fixed top-0 inset-x-0 z-50">

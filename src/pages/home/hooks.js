@@ -16,7 +16,7 @@ const useHome = () => {
   const [fetchDataLoading, setFetchDataLoading] = useState(true);
   const users = useSelector(({ users }) => users.data);
   const threads = useSelector(({ threads }) => threads.data);
-  const authUser = useSelector(({ authUser }) => authUser.data);
+  const authUser = useSelector(({ auth }) => auth.user);
   const isAuthed = Boolean(authUser);
   const { data: categories, selectedCategory } = useSelector(({ categories }) => categories);
   const controllers = useRef({});
@@ -80,16 +80,16 @@ const useHome = () => {
 
   useEffect(() => {
     let isMounted = true;
-    Object.values(controllers.current).forEach((controller) =>
+    const controllerList = controllers.current;
+    Object.values(controllerList).forEach((controller) =>
       controller.abort()
     );
-    controllers.current = {};
 
-    const promise = dispatch(fetchUsersThreads());
-    promise
+    const fetchUsersThreadsController = new AbortController();
+    dispatch(fetchUsersThreads({ signal: fetchUsersThreadsController.signal }))
       .unwrap()
       .catch((error) => {
-        if (isMounted && error.name !== 'AbortError') {
+        if (isMounted) {
           setFetchDataError(error);
         }
       })
@@ -98,8 +98,8 @@ const useHome = () => {
       });
 
     return () => {
-      promise.abort?.();
-      Object.values(controllers.current).forEach((controller) => controller.abort());
+      fetchUsersThreadsController.abort?.();
+      Object.values(controllerList).forEach((controller) => controller?.abort());
       isMounted = false;
     };
   }, [dispatch]);

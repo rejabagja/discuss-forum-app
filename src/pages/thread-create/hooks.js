@@ -33,7 +33,7 @@ const useThreadCreate = () => {
         }
       })
       .catch((error) => {
-        if (isMounted.current && error.name !== 'AbortError') setError(error.message);
+        if (isMounted.current) setError(error.message);
       })
       .finally(() => {
         if (isMounted.current) setLoading(false);

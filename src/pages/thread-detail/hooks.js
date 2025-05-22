@@ -18,7 +18,7 @@ const useThreadDetail = () => {
   const [fetchDataLoading, setFetchDataLoading] = useState(true);
   const [commentContent, setCommentContent, onInputComment] = useContentEditable('');
   const { data: thread, isLoading: createCommentLoading } = useSelector(({ threadDetail }) => threadDetail);
-  const authUser = useSelector(({ authUser }) => authUser.data);
+  const authUser = useSelector(({ auth }) => auth.user);
 
   const handleUpVoteThread = () => {
     if (!authUser) return showAuthRequiredToast('thread');
@@ -64,12 +64,12 @@ const useThreadDetail = () => {
 
   useEffect(() => {
     let isMounted = true;
-    const promise = dispatch(fetchThread({ threadId }));
 
-    promise
+    const fetchThreadController = new AbortController();
+    dispatch(fetchThread({ threadId, signal: fetchThreadController.signal }))
       .unwrap()
       .catch((error) => {
-        if (isMounted && error.name !== 'AbortError') {
+        if (isMounted) {
           setFetchDataError(error);
         }
       })
@@ -80,7 +80,7 @@ const useThreadDetail = () => {
       });
 
     return () => {
-      promise?.abort();
+      fetchThreadController?.abort();
       isMounted = false;
     };
   }, [dispatch, threadId]);

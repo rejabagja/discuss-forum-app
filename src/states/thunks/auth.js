@@ -3,7 +3,7 @@ import api from '@utils/api';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
-import { setAuthUser } from '@states/slices/auth-user';
+import { setAuthUser } from '@states/slices/auth';
 
 
 export const registerUser = createAsyncThunk(
@@ -30,7 +30,7 @@ export const registerUser = createAsyncThunk(
     } catch (error) {
       if (error.name === 'AbortError') {
         toast.error('Request was aborted');
-        return;
+        error.message = '';
       }
       return rejectWithValue(error.message);
     }
@@ -47,13 +47,13 @@ export const loginUser = createAsyncThunk(
       api.setAccessToken(token);
       const { data: { user }, message } = await api.getOwnProfile({ signal: signal || thunkApi.signal });
       dispatch(setAuthUser(user));
-      const authedUser = getState().authUser.data;
+      const authedUser = getState().auth.user;
       toast.success(`Welcome back, ${authedUser.name}`);
       return message;
     } catch (error) {
       if (error.name === 'AbortError') {
         toast.error('Request was aborted');
-        return;
+        error.message = '';
       }
       return rejectWithValue(error.message);
     }

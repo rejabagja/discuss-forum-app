@@ -4,11 +4,11 @@ import PreloadDataProvider from '@components/PreloadDataProvider';
 
 function App() {
   return (
-    <PreloadDataProvider>
-      <LayoutApp>
+    <LayoutApp>
+      <PreloadDataProvider>
         <AppRoutes />
-      </LayoutApp>
-    </PreloadDataProvider>
+      </PreloadDataProvider>
+    </LayoutApp>
   );
 }
 

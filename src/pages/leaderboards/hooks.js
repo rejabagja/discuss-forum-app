@@ -11,18 +11,18 @@ const useLeaderboards = () => {
   useEffect(() => {
     let isMounted = true;
 
-    const promise = dispatch(fetchLeaderboards());
-    promise
+    const fetchLeaderboardsController = new AbortController();
+    dispatch(fetchLeaderboards({ signal: fetchLeaderboardsController.signal }))
       .unwrap()
       .catch((error) => {
-        if (isMounted && error.name !== 'AbortError') setFetchDataError(error);
+        if (isMounted) setFetchDataError(error);
       })
       .finally(() => {
         if (isMounted) setFetchDataLoading(false);
       });
 
     return () => {
-      promise?.abort();
+      fetchLeaderboardsController?.abort();
       isMounted = false;
     };
   }, [dispatch]);

@@ -27,8 +27,7 @@ const useRegister = () => {
     };
     dispatch(registerUser(payloads))
       .unwrap()
-      .then((message) => {
-        console.info(message);
+      .then(() => {
         if (isMounted.current) {
           setName('');
           setEmail('');

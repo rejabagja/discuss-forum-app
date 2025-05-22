@@ -1,7 +1,7 @@
 import api from '@utils/api';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppError } from '@utils';
-import { setAuthUser } from '@states/slices/auth-user';
+import { setAuthUser } from '@states/slices/auth';
 import { setThreads } from '@states/slices/threads';
 import { setUsers } from '@states/slices/users';
 import { setCategories } from '@states/slices/categories';
@@ -10,20 +10,26 @@ import { hideLoading, showLoading } from 'react-redux-loading-bar';
 
 
 export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', async (options = {}, thunkApi) => {
-  const { dispatch, rejectWithValue, signal } = thunkApi;
-  const { externalSignal } = options;
+  const { dispatch, rejectWithValue } = thunkApi;
+  const { signal } = options;
   const token = api.getAccessToken();
   try {
     if (!token) {
       throw new AppError('access token not found', 401);
     }
-    const { data: { user } } = await api.getOwnProfile({ signal: externalSignal || signal });
+    const { data: { user } } = await api.getOwnProfile({ signal });
     dispatch(setAuthUser(user));
   } catch (error) {
-    if (error.name === 'AbortError') return;
     if (error.statusCode === 401) {
       if (token) api.removeAccessToken(); // if token exists, remove it
-      return;
+      return error.message;
+    }
+    if (error.name === 'AbortError') {
+      return rejectWithValue({
+        name: error.name,
+        message: 'Request was aborted',
+        statusCode: 408,
+      });
     }
     return rejectWithValue(
       {
@@ -38,15 +44,20 @@ export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', asy
 export const fetchLeaderboards = createAsyncThunk(
   'leaderboards/fetchLeaderboards',
   async (options = {}, thunkApi) => {
-    const { rejectWithValue, dispatch, signal } = thunkApi;
-    const { externalSignal } = options;
+    const { rejectWithValue, dispatch } = thunkApi;
+    const { signal } = options;
     try {
       dispatch(showLoading());
-      const { data: { leaderboards } } = await api.getLeaderBoards({ signal: externalSignal || signal });
+      const { data: { leaderboards } } = await api.getLeaderBoards({ signal });
       dispatch(setLeaderboards(leaderboards));
     } catch (error) {
-      if (error.name === 'AbortError') return;
-
+      if (error.name === 'AbortError') {
+        return rejectWithValue({
+          name: error.name,
+          message: 'Request was aborted',
+          statusCode: 408,
+        });
+      }
       return rejectWithValue({
         name: error.name,
         message: error.message,
@@ -61,19 +72,25 @@ export const fetchLeaderboards = createAsyncThunk(
 export const fetchUsersThreads = createAsyncThunk(
   'combine/fetchUsersThreads',
   async (options = {}, thunkApi) => {
-    const { dispatch, rejectWithValue, signal } = thunkApi;
-    const { externalSignal } = options;
+    const { dispatch, rejectWithValue } = thunkApi;
+    const { signal } = options;
     try {
       dispatch(showLoading());
-      const { data: { threads } } = await api.getThreads({ signal: externalSignal || signal });
-      const { data: { users } } = await api.getUsers({ signal: externalSignal || signal });
+      const { data: { threads } } = await api.getThreads({ signal });
+      const { data: { users } } = await api.getUsers({ signal });
 
       const categories = [...new Set(threads.map((thread) => thread.category))];
       dispatch(setCategories(categories));
       dispatch(setUsers(users));
       dispatch(setThreads(threads));
     } catch (error) {
-      if (error.name === 'AbortError') return;
+      if (error.name === 'AbortError') {
+        return rejectWithValue({
+          name: error.name,
+          message: 'Request was aborted',
+          statusCode: 408,
+        });
+      }
       return rejectWithValue({
         name: error.name,
         message: error.message,
