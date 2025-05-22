@@ -37,14 +37,16 @@ const threadsSlice = createSlice({
     setThreads: (state, action) => {
       state.data = action.payload;
     },
-    threadRollback: (state, action) => {
-      const targetIndex = state.data.findIndex((thread) => thread.id === action.payload.id);
+    threadVotesRollback: (state, action) => {
+      const { threadId } = action.payload;
+      const targetIndex = state.data.findIndex((thread) => thread.id === threadId);
       if (targetIndex !== -1) {
-        state.data[targetIndex] = action.payload;
+        state.data[targetIndex].upVotesBy = action.payload.upVotesBy;
+        state.data[targetIndex].downVotesBy = action.payload.downVotesBy;
       }
     },
   }
 });
 
-export const { upVote, downVote, neutralVote, setThreads, threadRollback } = threadsSlice.actions;
+export const { upVote, downVote, neutralVote, setThreads, threadVotesRollback } = threadsSlice.actions;
 export default threadsSlice.reducer;

@@ -2,7 +2,7 @@ import api from '@utils/api';
 import { toast } from 'react-toastify';
 import { VoteType } from '@constants';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { upVote, downVote, neutralVote, threadRollback } from '@states/slices/threads';
+import { upVote, downVote, neutralVote, threadVotesRollback } from '@states/slices/threads';
 
 
 export const createThread = createAsyncThunk(
@@ -35,7 +35,7 @@ export const upVoteThreads = createAsyncThunk(
       dispatch(upVote({ threadId: thread.id, userId: authUser.id }));
       await api.setVoteThread(thread.id, VoteType.UP_VOTE), { signal };
     } catch (error) {
-      dispatch(threadRollback(thread));
+      dispatch(threadVotesRollback(thread));
       console.error(error.message);
     }
   }
@@ -51,7 +51,7 @@ export const downVoteThreads = createAsyncThunk(
       dispatch(downVote({ threadId: thread.id, userId: authUser.id }));
       await api.setVoteThread(thread.id, VoteType.DOWN_VOTE, { signal });
     } catch (error) {
-      dispatch(threadRollback(thread));
+      dispatch(threadVotesRollback(thread));
       console.error(error.message);
     }
   }
@@ -67,7 +67,7 @@ export const neutralVoteThreads = createAsyncThunk(
       dispatch(neutralVote({ threadId: thread.id, userId: authUser.id }));
       await api.setVoteThread(thread.id, VoteType.NEUTRAL_VOTE, { signal });
     } catch (error) {
-      dispatch(threadRollback(thread));
+      dispatch(threadVotesRollback(thread));
       console.error(error.message);
     }
   }

@@ -1,19 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {
-  createComment,
-  upVoteThread,
-  downVoteThread,
-  neutralVoteThread,
-  upVoteComment,
-  downVoteComment,
-  neutralVoteComment,
-} from '@states/thunks/thread_detail';
 
 
 const initialState = {
   data: null,
-  isLoading: false,
-  error: null,
 };
 
 const threadDetailSlice = createSlice({
@@ -73,100 +62,23 @@ const threadDetailSlice = createSlice({
     setThreadData: (state, action) => {
       state.data = action.payload;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(createComment.pending, (state) => {
-        state.error = null;
-        state.isLoading = true;
-      })
-      .addCase(createComment.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.data.comments.unshift(action.payload);
-      })
-      .addCase(createComment.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      });
-
-    builder
-      .addCase(upVoteThread.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(upVoteThread.rejected, (state, action) => {
-        const { userId, error } = action.payload;
-        state.data.upVotesBy = state.data.upVotesBy.filter(
-          (id) => id !== userId
-        );
-        state.error = error;
-      });
-
-    builder
-      .addCase(downVoteThread.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(downVoteThread.rejected, (state, action) => {
-        const { userId, error } = action.payload;
-        state.data.downVotesBy = state.data.downVotesBy.filter(
-          (id) => id !== userId
-        );
-        state.error = error;
-      });
-
-    builder
-      .addCase(neutralVoteThread.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(neutralVoteThread.rejected, (state, action) => {
-        const { upVotesBy, downVotesBy, error } = action.payload;
-        state.data = { ...state.data, upVotesBy, downVotesBy };
-        state.error = error;
-      });
-
-    builder
-      .addCase(upVoteComment.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(upVoteComment.rejected, (state, action) => {
-        const { commentId, userId, error } = action.payload;
-        const comment = state.data.comments.find((comment) => comment.id === commentId);
-        if (comment) {
-          comment.upVotesBy = comment.upVotesBy.filter((id) => id !== userId);
-          state.error = error;
-        }
-      });
-
-    builder
-      .addCase(downVoteComment.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(downVoteComment.rejected, (state, action) => {
-        const { commentId, userId, error } = action.payload;
-        const comment = state.data.comments.find((comment) => comment.id === commentId);
-        if (comment) {
-          comment.downVotesBy = comment.downVotesBy.filter((id) => id !== userId);
-          state.error = error;
-        }
-      });
-
-    builder
-      .addCase(neutralVoteComment.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(neutralVoteComment.rejected, (state, action) => {
-        const { commentId, upVotesBy, downVotesBy, error } = action.payload;
-        const comment = state.data.comments.find(
-          (comment) => comment.id === commentId
-        );
-        if (comment) {
-          comment.upVotesBy = upVotesBy;
-          comment.downVotesBy = downVotesBy;
-          state.error = error;
-        }
-      });
+    addNewComment: (state, action) => {
+      state.data.comments.unshift(action.payload);
+    },
+    threadVotesRollback: (state, action) => {
+      state.data.upVotesBy = action.payload.upVotesBy;
+      state.data.downVotesBy = action.payload.downVotesBy;
+    },
+    commentVotesRollback: (state, action) => {
+      const { commentId } = action.payload;
+      const comment = state.data.comments.find((comment) => comment.id === commentId);
+      if (!comment) return;
+      comment.upVotesBy = action.payload.upVotesBy;
+      comment.downVotesBy = action.payload.downVotesBy;
+    },
   },
 });
 
 
-export const { upVote, downVote, neutralVote, upComment, downComment, neutralComment, setThreadData } = threadDetailSlice.actions;
+export const { upVote, downVote, neutralVote, upComment, downComment, neutralComment, setThreadData, addNewComment, threadVotesRollback, commentVotesRollback } = threadDetailSlice.actions;
 export default threadDetailSlice.reducer;

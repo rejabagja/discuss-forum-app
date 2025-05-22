@@ -44,13 +44,13 @@ const useHome = () => {
     if (!isAuthed) return showAuthRequiredToast('thread');
 
     const threadId = thread.id;
-
-    if (controllers.current[threadId]) {
-      controllers.current[threadId].abort();
+    const haveController = controllers.current[`vote-thread-${threadId}`];
+    if (haveController && !haveController.signal.aborted) {
+      controllers.current[`vote-thread-${threadId}`].abort();
     }
 
     const controller = new AbortController();
-    controllers.current[threadId] = controller;
+    controllers.current[`vote-thread-${threadId}`] = controller;
 
     delete thread.owner;
     delete thread.authUser;
