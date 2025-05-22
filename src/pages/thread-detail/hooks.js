@@ -9,6 +9,7 @@ import {
   createComment, fetchThread
 } from '@states/thunks/thread_detail';
 import { showAuthRequiredToast } from '@utils';
+import { toast } from 'react-toastify';
 
 
 const useThreadDetail = () => {
@@ -24,7 +25,9 @@ const useThreadDetail = () => {
 
 
   const handleVoteThread = (type) => {
-    if (!authUser) return showAuthRequiredToast('thread');
+    if (!authUser) {
+      return toast.isActive('auth-required') ? null : showAuthRequiredToast('thread');
+    }
 
     if (controllers.current[`vote-thread-${threadId}`] && !controllers.current[`vote-thread-${threadId}`].signal.aborted) {
       controllers.current[`vote-thread-${threadId}`].abort();
@@ -54,7 +57,9 @@ const useThreadDetail = () => {
   };
 
   const handleVoteComment = (comment, type) => {
-    if (!authUser) return showAuthRequiredToast('thread');
+    if (!authUser) {
+      return toast.isActive('auth-required') ? null : showAuthRequiredToast('comment');
+    }
 
     if (
       controllers.current[`vote-comment-${comment.id}`] &&

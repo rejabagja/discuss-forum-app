@@ -8,6 +8,7 @@ import {
 import { showAuthRequiredToast } from '@utils';
 import { useEffect, useRef, useState } from 'react';
 import { fetchUsersThreads } from '@states/thunks';
+import { toast } from 'react-toastify';
 
 
 const useHome = () => {
@@ -41,7 +42,9 @@ const useHome = () => {
   };
 
   const handleVote = (thread, type) => {
-    if (!isAuthed) return showAuthRequiredToast('thread');
+    if (!isAuthed) {
+      return toast.isActive('auth-required') ? null : showAuthRequiredToast('thread');
+    }
 
     const threadId = thread.id;
     const haveController = controllers.current[`vote-thread-${threadId}`];

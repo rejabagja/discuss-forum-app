@@ -14,6 +14,7 @@ export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', asy
   const { signal } = options;
   const token = api.getAccessToken();
   try {
+    dispatch(showLoading());
     if (!token) {
       throw new AppError('access token not found', 401);
     }
@@ -38,6 +39,8 @@ export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', asy
         statusCode: error.statusCode,
       }
     );
+  } finally {
+    dispatch(hideLoading());
   }
 });
 

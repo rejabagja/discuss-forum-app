@@ -78,7 +78,10 @@ export const showAuthRequiredToast = (action) => {
     action,
     ' action.'
   );
-  toast.info(toastContent);
+  toast.info(toastContent, {
+    toastId: 'auth-required',
+    autoClose: 3000,
+  });
 };
 
 export const getInitialTheme = () => {
