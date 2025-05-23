@@ -1,11 +1,13 @@
 import { useHome } from './hooks';
-import CategoryList from '@components/CategoryList';
-import ThreadList from '@components/ThreadList';
+import {
+  CategoryList,
+  ThreadList,
+  FetchDataError,
+  CategoryItemSkeleteon,
+  ThreadItemSkeleton,
+} from '@components';
 import { BiPlus } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
-import FetchDataError from '@components/FetchDataError';
-import CategoryItemSkeleteon from '@components/CategoryItemSkeleteon';
-import ThreadItemSkeleton from '@components/ThreadItemSkeleton';
 
 const PageHome = () => {
   const {

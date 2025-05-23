@@ -1,5 +1,5 @@
 import { useThreadCreate } from './hooks';
-import FormThreadCreate from '@components/FormThreadCreate';
+import { FormThreadCreate } from '@components';
 import { Navigate } from 'react-router-dom';
 
 const PageThreadCreate = () => {

@@ -1,5 +1,5 @@
 import { useRegister } from './hooks';
-import FormRegister from '@components/FormRegister';
+import { FormRegister } from '@components';
 import AuthPageWrapper from '@layouts/AuthPageWrapper';
 
 const PageRegister = () => {

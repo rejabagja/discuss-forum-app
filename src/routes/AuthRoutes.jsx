@@ -1,6 +1,5 @@
 import { Route } from 'react-router-dom';
-import PageLogin from '@pages/_auth/login';
-import PageRegister from '@pages/_auth/register';
+import { PageLogin, PageRegister } from '@pages';
 
 const AuthRoutes = (
   <>

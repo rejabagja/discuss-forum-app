@@ -1,7 +1,9 @@
 import { useLeaderboards } from './hooks';
-import LeaderboardList from '@components/LeaderboardList';
-import FetchDataError from '@components/FetchDataError';
-import LeaderboardItemSkeleteon from '@components/LeaderboardItemSkeleteon';
+import {
+  LeaderboardList,
+  FetchDataError,
+  LeaderboardItemSkeleteon,
+} from '@components';
 
 const PageLeaderboards = () => {
   const { leaderboards, fetchDataError, fetchDataLoading } = useLeaderboards();

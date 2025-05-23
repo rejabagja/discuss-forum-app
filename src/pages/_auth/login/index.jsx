@@ -1,5 +1,5 @@
 import { useLogin } from './hooks';
-import FormLogin from '@components/FormLogin';
+import { FormLogin } from '@components';
 import AuthPageWrapper from '@layouts/AuthPageWrapper';
 
 const PageLogin = () => {

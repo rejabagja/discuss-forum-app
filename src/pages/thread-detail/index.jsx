@@ -1,8 +1,10 @@
 import { useThreadDetail } from './hooks';
-import ThreadCommentInput from '@components/ThreadCommentInput';
-import ThreadCommentList from '@components/ThreadCommentList';
-import ThreadDetailContent from '@components/ThreadDetailContent';
-import FetchDataError from '@components/FetchDataError';
+import {
+  ThreadCommentInput,
+  ThreadCommentList,
+  ThreadDetailContent,
+  FetchDataError,
+} from '@components';
 
 const PageThreadDetail = () => {
   const {
