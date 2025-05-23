@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useContentEditable } from '@hooks';
 import {
-  upVoteThread, downVoteThread,
-  neutralVoteThread, upVoteComment,
+  upVoteThreadDetail, downVoteThreadDetail,
+  neutralVoteThreadDetail, upVoteComment,
   downVoteComment, neutralVoteComment,
   createComment, fetchThread
 } from '@states/thunks/thread_detail';
@@ -44,14 +44,14 @@ const useThreadDetail = () => {
     if (type === 'up') {
       dispatch(
         thread.upVotesBy.includes(authUser.id)
-          ? neutralVoteThread(payloads)
-          : upVoteThread(payloads)
+          ? neutralVoteThreadDetail(payloads)
+          : upVoteThreadDetail(payloads)
       );
     } else if (type === 'down') {
       dispatch(
         thread.downVotesBy.includes(authUser.id)
-          ? neutralVoteThread(payloads)
-          : downVoteThread(payloads)
+          ? neutralVoteThreadDetail(payloads)
+          : downVoteThreadDetail(payloads)
       );
     }
   };

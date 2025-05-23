@@ -1,9 +1,9 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedCategory } from '@states/slices/categories';
 import {
-  upVoteThreads,
-  downVoteThreads,
-  neutralVoteThreads,
+  upVoteThread,
+  downVoteThread,
+  neutralVoteThread,
 } from '@states/thunks/threads';
 import { showAuthRequiredToast } from '@utils';
 import { useEffect, useRef, useState } from 'react';
@@ -66,14 +66,14 @@ const useHome = () => {
     if (type === 'up') {
       dispatch(
         thread.upVotesBy.includes(authUser.id)
-          ? neutralVoteThreads(payloads)
-          : upVoteThreads(payloads)
+          ? neutralVoteThread(payloads)
+          : upVoteThread(payloads)
       );
     } else if (type === 'down') {
       dispatch(
         thread.downVotesBy.includes(authUser.id)
-          ? neutralVoteThreads(payloads)
-          : downVoteThreads(payloads)
+          ? neutralVoteThread(payloads)
+          : downVoteThread(payloads)
       );
     }
   };

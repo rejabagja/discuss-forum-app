@@ -2,8 +2,8 @@ import api from '@utils/api';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppError } from '@utils';
 import { setAuthUser } from '@states/slices/auth';
-import { setThreads } from '@states/slices/threads';
-import { setUsers } from '@states/slices/users';
+import { setThreadsData } from '@states/slices/threads';
+import { setUsersData } from '@states/slices/users';
 import { setCategories } from '@states/slices/categories';
 import { setLeaderboards } from '@states/slices/leaderboards';
 import { hideLoading, showLoading } from 'react-redux-loading-bar';
@@ -84,8 +84,8 @@ export const fetchUsersThreads = createAsyncThunk(
 
       const categories = [...new Set(threads.map((thread) => thread.category))];
       dispatch(setCategories(categories));
-      dispatch(setUsers(users));
-      dispatch(setThreads(threads));
+      dispatch(setUsersData(users));
+      dispatch(setThreadsData(threads));
     } catch (error) {
       if (error.name === 'AbortError') {
         return rejectWithValue({

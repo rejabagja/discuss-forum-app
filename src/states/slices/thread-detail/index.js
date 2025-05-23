@@ -9,15 +9,17 @@ const threadDetailSlice = createSlice({
   name: 'threadDetail',
   initialState,
   reducers: {
-    upVote: (state, action) => {
+    voteUpThread: (state, action) => {
       const userId = action.payload;
+      if (state.data.upVotesBy.includes(userId)) return;
       if (state.data.downVotesBy.includes(userId)) {
         state.data.downVotesBy = state.data.downVotesBy.filter((id) => id !== userId);
       }
       state.data.upVotesBy.push(userId);
     },
-    downVote: (state, action) => {
+    voteDownThread: (state, action) => {
       const userId = action.payload;
+      if (state.data.downVotesBy.includes(userId)) return;
       if (state.data.upVotesBy.includes(userId)) {
         state.data.upVotesBy = state.data.upVotesBy.filter(
           (id) => id !== userId
@@ -25,37 +27,38 @@ const threadDetailSlice = createSlice({
       }
       state.data.downVotesBy.push(userId);
     },
-    neutralVote: (state, action) => {
+    voteNeutralThread: (state, action) => {
       const userId = action.payload;
+      if (!state.data.upVotesBy.includes(userId) && !state.data.downVotesBy.includes(userId)) return;
       state.data.upVotesBy = state.data.upVotesBy.filter((id) => id !== userId);
       state.data.downVotesBy = state.data.downVotesBy.filter((id) => id !== userId);
     },
-    upComment: (state, action) => {
+    voteUpComment: (state, action) => {
       const { commentId, userId } = action.payload;
       const comment = state.data.comments.find((comment) => comment.id === commentId);
-      if (!comment) return;
+      if (!comment || comment.upVotesBy.includes(userId)) return;
       if (comment.downVotesBy.includes(userId)) {
         comment.downVotesBy = comment.downVotesBy.filter((id) => id !== userId);
       }
       comment.upVotesBy.push(userId);
     },
-    downComment: (state, action) => {
+    voteDownComment: (state, action) => {
       const { commentId, userId } = action.payload;
       const comment = state.data.comments.find(
         (comment) => comment.id === commentId
       );
-      if (!comment) return;
+      if (!comment || comment.downVotesBy.includes(userId)) return;
       if (comment.upVotesBy.includes(userId)) {
         comment.upVotesBy = comment.upVotesBy.filter((id) => id !== userId);
       }
       comment.downVotesBy.push(userId);
     },
-    neutralComment: (state, action) => {
+    voteNeutralComment: (state, action) => {
       const { commentId, userId } = action.payload;
       const comment = state.data.comments.find(
         (comment) => comment.id === commentId
       );
-      if (!comment) return;
+      if (!comment || !comment.upVotesBy.includes(userId) && !comment.downVotesBy.includes(userId)) return;
       comment.upVotesBy = comment.upVotesBy.filter((id) => id !== userId);
       comment.downVotesBy = comment.downVotesBy.filter((id) => id !== userId);
     },
@@ -80,5 +83,10 @@ const threadDetailSlice = createSlice({
 });
 
 
-export const { upVote, downVote, neutralVote, upComment, downComment, neutralComment, setThreadData, addNewComment, threadVotesRollback, commentVotesRollback } = threadDetailSlice.actions;
+export const {
+  voteUpThread, voteDownThread, voteNeutralThread,
+  voteUpComment, voteDownComment, voteNeutralComment,
+  setThreadData, addNewComment, threadVotesRollback,
+  commentVotesRollback }
+= threadDetailSlice.actions;
 export default threadDetailSlice.reducer;

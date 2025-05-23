@@ -1,11 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 
+
+const initialState = {
+  data: [],
+};
 const leaderboardsSlice = createSlice({
   name: 'leaderboards',
-  initialState: {
-    data: [],
-  },
+  initialState,
   reducers: {
     setLeaderboards: (state, action) => {
       state.data = action.payload;

@@ -9,32 +9,32 @@ const threadsSlice = createSlice({
   name: 'threads',
   initialState,
   reducers: {
-    upVote: (state, action) => {
+    voteUpThread: (state, action) => {
       const { threadId, userId } = action.payload;
       const thread = state.data.find((thread) => thread.id === threadId);
-      if (!thread) return;
+      if (!thread || thread.upVotesBy.includes(userId)) return;
       if (thread.downVotesBy.includes(userId)) {
         thread.downVotesBy = thread.downVotesBy.filter((id) => id !== userId);
       }
       thread.upVotesBy.push(userId);
     },
-    downVote: (state, action) => {
+    voteDownThread: (state, action) => {
       const { threadId, userId } = action.payload;
       const thread = state.data.find((thread) => thread.id === threadId);
-      if (!thread) return;
+      if (!thread || thread.downVotesBy.includes(userId)) return;
       if (thread.upVotesBy.includes(userId)) {
         thread.upVotesBy = thread.upVotesBy.filter((id) => id !== userId);
       }
       thread.downVotesBy.push(userId);
     },
-    neutralVote: (state, action) => {
+    voteNeutralThread: (state, action) => {
       const { threadId, userId } = action.payload;
       const thread = state.data.find((thread) => thread.id === threadId);
-      if (!thread) return;
+      if (!thread || !thread.upVotesBy.includes(userId) && !thread.downVotesBy.includes(userId)) return;
       thread.upVotesBy = thread.upVotesBy.filter((id) => id !== userId);
       thread.downVotesBy = thread.downVotesBy.filter((id) => id !== userId);
     },
-    setThreads: (state, action) => {
+    setThreadsData: (state, action) => {
       state.data = action.payload;
     },
     threadVotesRollback: (state, action) => {
@@ -48,5 +48,5 @@ const threadsSlice = createSlice({
   }
 });
 
-export const { upVote, downVote, neutralVote, setThreads, threadVotesRollback } = threadsSlice.actions;
+export const { voteUpThread, voteDownThread, voteNeutralThread, setThreadsData, threadVotesRollback } = threadsSlice.actions;
 export default threadsSlice.reducer;

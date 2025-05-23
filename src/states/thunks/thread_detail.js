@@ -3,12 +3,12 @@ import { VoteType } from '@constants';
 import { toast } from 'react-toastify';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
-  upVote,
-  downVote,
-  neutralVote,
-  upComment,
-  downComment,
-  neutralComment,
+  voteUpThread,
+  voteDownThread,
+  voteNeutralThread,
+  voteUpComment,
+  voteDownComment,
+  voteNeutralComment,
   setThreadData,
   addNewComment,
   threadVotesRollback,
@@ -55,23 +55,34 @@ export const createComment = createAsyncThunk(
       const { data: { comment }, message } = await api.createComment(payload, { signal });
       dispatch(addNewComment(comment));
       const toastMessage = `${message} successfully`;
-      toast.success(toastMessage);
+      if (!toast.isActive('create-comment-success')) {
+        toast.success(toastMessage, {
+          toastId: 'create-comment-success',
+        });
+      }
       return { data: { comment } };
     } catch (error) {
-      toast.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
+      if (!toast.isActive('create-comment-error')) {
+        toast.error(
+          error.name === 'AbortError' ? 'Request was aborted' : error.message,
+          {
+            toastId: 'create-comment-error',
+          }
+        );
+      }
       return rejectWithValue({ message: error.name === 'AbortError' ? 'Request was aborted' : error.message });
     }
   }
 );
 
-export const upVoteThread = createAsyncThunk(
+export const upVoteThreadDetail = createAsyncThunk(
   'threadDetail/upVote',
   async (payloads = {}, thunkApi) => {
     const { threadId, signal } = payloads;
     const { rejectWithValue, dispatch, getState } = thunkApi;
     const userId = getState().auth.user.id;
     const { upVotesBy, downVotesBy } = getState().threadDetail.data;
-    dispatch(upVote(userId));
+    dispatch(voteUpThread(userId));
     try {
       const { data } = await api.setVoteThread(threadId, VoteType.UP_VOTE, { signal });
       return { data };
@@ -83,14 +94,14 @@ export const upVoteThread = createAsyncThunk(
   }
 );
 
-export const downVoteThread = createAsyncThunk(
+export const downVoteThreadDetail = createAsyncThunk(
   'threadDetail/downVote',
   async (payloads = {}, thunkApi) => {
     const { threadId, signal } = payloads;
     const { rejectWithValue, dispatch, getState } = thunkApi;
     const userId = getState().auth.user.id;
     const { upVotesBy, downVotesBy } = getState().threadDetail.data;
-    dispatch(downVote(userId));
+    dispatch(voteDownThread(userId));
     try {
       const { data } = await api.setVoteThread(threadId, VoteType.DOWN_VOTE, { signal });
       return { data };
@@ -102,14 +113,14 @@ export const downVoteThread = createAsyncThunk(
   }
 );
 
-export const neutralVoteThread = createAsyncThunk(
+export const neutralVoteThreadDetail = createAsyncThunk(
   'threadDetail/neutralVote',
   async (payloads = {}, thunkApi) => {
     const { threadId, signal } = payloads;
     const { rejectWithValue, dispatch, getState } = thunkApi;
     const userId = getState().auth.user.id;
     const { upVotesBy, downVotesBy } = getState().threadDetail.data;
-    dispatch(neutralVote(userId));
+    dispatch(voteNeutralThread(userId));
     try {
       const { data } = await api.setVoteThread(threadId, VoteType.NEUTRAL_VOTE, { signal });
       return { data };
@@ -130,7 +141,7 @@ export const upVoteComment = createAsyncThunk(
     const threadDetail = getState().threadDetail.data;
     const { upVotesBy, downVotesBy } = threadDetail.comments.find((comment) => comment.id === commentId);
 
-    dispatch(upComment({ commentId, userId: authUser.id }));
+    dispatch(voteUpComment({ commentId, userId: authUser.id }));
     try {
       const payload = { commentId, threadId: threadDetail.id, voteType: VoteType.UP_VOTE };
       await api.setVoteComment(payload, { signal });
@@ -153,7 +164,7 @@ export const downVoteComment = createAsyncThunk(
     const threadDetail = getState().threadDetail.data;
     const { upVotesBy, downVotesBy } = threadDetail.comments.find((comment) => comment.id === commentId);
 
-    dispatch(downComment({ commentId, userId: authUser.id }));
+    dispatch(voteDownComment({ commentId, userId: authUser.id }));
     try {
       const payload = { commentId, threadId: threadDetail.id, voteType: VoteType.DOWN_VOTE };
       await api.setVoteComment(payload, { signal });
@@ -176,7 +187,7 @@ export const neutralVoteComment = createAsyncThunk(
     const threadDetail = getState().threadDetail.data;
     const { upVotesBy, downVotesBy } = threadDetail.comments.find((comment) => comment.id === commentId);
 
-    dispatch(neutralComment({ commentId, userId: authUser.id }));
+    dispatch(voteNeutralComment({ commentId, userId: authUser.id }));
     try {
       const payload = { commentId, threadId: threadDetail.id, voteType: VoteType.NEUTRAL_VOTE };
       await api.setVoteComment(payload, { signal });

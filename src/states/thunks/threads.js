@@ -2,7 +2,7 @@ import api from '@utils/api';
 import { toast } from 'react-toastify';
 import { VoteType } from '@constants';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { upVote, downVote, neutralVote, threadVotesRollback } from '@states/slices/threads';
+import { voteUpThread, voteDownThread, voteNeutralThread, threadVotesRollback } from '@states/slices/threads';
 
 
 export const createThread = createAsyncThunk(
@@ -25,50 +25,53 @@ export const createThread = createAsyncThunk(
   }
 );
 
-export const upVoteThreads = createAsyncThunk(
+export const upVoteThread = createAsyncThunk(
   'threads/upVote',
   async (payloads = {}, thunkApi) => {
-    const { dispatch, getState } = thunkApi;
+    const { dispatch, getState, rejectWithValue } = thunkApi;
     const { thread, signal } = payloads;
     const authUser = getState().auth.user;
+    dispatch(voteUpThread({ threadId: thread.id, userId: authUser.id }));
     try {
-      dispatch(upVote({ threadId: thread.id, userId: authUser.id }));
-      await api.setVoteThread(thread.id, VoteType.UP_VOTE), { signal };
+      const { data } = await api.setVoteThread(thread.id, VoteType.UP_VOTE, { signal });
+      return { data };
     } catch (error) {
       dispatch(threadVotesRollback(thread));
-      console.error(error.message);
+      return rejectWithValue({ message: error.message });
     }
   }
 );
 
-export const downVoteThreads = createAsyncThunk(
+export const downVoteThread = createAsyncThunk(
   'threads/downVote',
   async (payloads = {}, thunkApi) => {
-    const { dispatch, getState } = thunkApi;
+    const { dispatch, getState, rejectWithValue } = thunkApi;
     const { thread, signal } = payloads;
     const authUser = getState().auth.user;
+    dispatch(voteDownThread({ threadId: thread.id, userId: authUser.id }));
     try {
-      dispatch(downVote({ threadId: thread.id, userId: authUser.id }));
-      await api.setVoteThread(thread.id, VoteType.DOWN_VOTE, { signal });
+      const { data } = await api.setVoteThread(thread.id, VoteType.DOWN_VOTE, { signal });
+      return { data };
     } catch (error) {
       dispatch(threadVotesRollback(thread));
-      console.error(error.message);
+      return rejectWithValue({ message: error.message });
     }
   }
 );
 
-export const neutralVoteThreads = createAsyncThunk(
+export const neutralVoteThread = createAsyncThunk(
   'threads/neutralVote',
   async (payloads = {}, thunkApi) => {
-    const { dispatch, getState } = thunkApi;
+    const { dispatch, getState, rejectWithValue } = thunkApi;
     const { thread, signal } = payloads;
     const authUser = getState().auth.user;
+    dispatch(voteNeutralThread({ threadId: thread.id, userId: authUser.id }));
     try {
-      dispatch(neutralVote({ threadId: thread.id, userId: authUser.id }));
-      await api.setVoteThread(thread.id, VoteType.NEUTRAL_VOTE, { signal });
+      const { data } = await api.setVoteThread(thread.id, VoteType.NEUTRAL_VOTE, { signal });
+      return { data };
     } catch (error) {
       dispatch(threadVotesRollback(thread));
-      console.error(error.message);
+      return rejectWithValue({ message: error.message });
     }
   }
 );
