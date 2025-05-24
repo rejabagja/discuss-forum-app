@@ -26,7 +26,6 @@ export const registerUser = createAsyncThunk(
         )
       );
       toast.success(toastContent);
-      return message;
     } catch (error) {
       if (error.name === 'AbortError') {
         toast.error('Request was aborted');
@@ -43,13 +42,12 @@ export const loginUser = createAsyncThunk(
     const { rejectWithValue, dispatch, getState } = thunkApi;
     const { credentials, signal } = payloads;
     try {
-      const { data: { token } } = await api.login(credentials, { signal: signal || thunkApi.signal });
+      const { token } = await api.login(credentials, { signal: signal || thunkApi.signal });
       api.setAccessToken(token);
-      const { data: { user }, message } = await api.getOwnProfile({ signal: signal || thunkApi.signal });
+      const { user } = await api.getOwnProfile({ signal: signal || thunkApi.signal });
       dispatch(setAuthUser(user));
       const authedUser = getState().auth.user;
       toast.success(`Welcome back, ${authedUser.name}`);
-      return message;
     } catch (error) {
       if (error.name === 'AbortError') {
         toast.error('Request was aborted');

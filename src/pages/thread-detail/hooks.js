@@ -114,7 +114,6 @@ const useThreadDetail = () => {
       .then(() => {
         setCommentContent('');
       })
-      .catch(() => {})
       .finally(() => setCreateCommentLoading(false));
   };
 

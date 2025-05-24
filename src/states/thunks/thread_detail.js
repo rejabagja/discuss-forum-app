@@ -24,9 +24,8 @@ export const fetchThread = createAsyncThunk(
     const { rejectWithValue, dispatch } = thunkApi;
     try {
       dispatch(showLoading());
-      const { data: { detailThread } } = await api.getThreadDetail(threadId, { signal });
+      const { detailThread } = await api.getThreadDetail(threadId, { signal });
       dispatch(setThreadData(detailThread));
-      return { data: { detailThread } };
     } catch (error) {
       if (error.name === 'AbortError') {
         return rejectWithValue({
@@ -49,10 +48,10 @@ export const fetchThread = createAsyncThunk(
 export const createComment = createAsyncThunk(
   'threadDetail/createComment',
   async (payloads = {}, thunkApi) => {
-    const { dispatch, rejectWithValue } = thunkApi;
+    const { dispatch } = thunkApi;
     const { payload, signal } = payloads;
     try {
-      const { data: { comment }, message } = await api.createComment(payload, { signal });
+      const { comment, message } = await api.createComment(payload, { signal });
       dispatch(addNewComment(comment));
       const toastMessage = `${message} successfully`;
       if (!toast.isActive('create-comment-success')) {
@@ -60,7 +59,6 @@ export const createComment = createAsyncThunk(
           toastId: 'create-comment-success',
         });
       }
-      return { data: { comment } };
     } catch (error) {
       if (!toast.isActive('create-comment-error')) {
         toast.error(
@@ -70,7 +68,6 @@ export const createComment = createAsyncThunk(
           }
         );
       }
-      return rejectWithValue({ message: error.name === 'AbortError' ? 'Request was aborted' : error.message });
     }
   }
 );
@@ -79,17 +76,15 @@ export const upVoteThreadDetail = createAsyncThunk(
   'threadDetail/upVote',
   async (payloads = {}, thunkApi) => {
     const { threadId, signal } = payloads;
-    const { rejectWithValue, dispatch, getState } = thunkApi;
+    const { dispatch, getState } = thunkApi;
     const userId = getState().auth.user.id;
     const { upVotesBy, downVotesBy } = getState().threadDetail.data;
     dispatch(voteUpThread(userId));
     try {
-      const { data } = await api.setVoteThread(threadId, VoteType.UP_VOTE, { signal });
-      return { data };
+      await api.setVoteThread(threadId, VoteType.UP_VOTE, { signal });
     } catch (error) {
       dispatch(threadVotesRollback({ upVotesBy, downVotesBy }));
-      console.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
-      return rejectWithValue({ message: error.name === 'AbortError' ? 'Request was aborted' : error.message });
+      toast.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
     }
   }
 );
@@ -98,17 +93,15 @@ export const downVoteThreadDetail = createAsyncThunk(
   'threadDetail/downVote',
   async (payloads = {}, thunkApi) => {
     const { threadId, signal } = payloads;
-    const { rejectWithValue, dispatch, getState } = thunkApi;
+    const { dispatch, getState } = thunkApi;
     const userId = getState().auth.user.id;
     const { upVotesBy, downVotesBy } = getState().threadDetail.data;
     dispatch(voteDownThread(userId));
     try {
-      const { data } = await api.setVoteThread(threadId, VoteType.DOWN_VOTE, { signal });
-      return { data };
+      await api.setVoteThread(threadId, VoteType.DOWN_VOTE, { signal });
     } catch (error) {
       dispatch(threadVotesRollback({ upVotesBy, downVotesBy }));
-      console.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
-      return rejectWithValue({ message: error.name === 'AbortError' ? 'Request was aborted' : error.message });
+      toast.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
     }
   }
 );
@@ -117,17 +110,15 @@ export const neutralVoteThreadDetail = createAsyncThunk(
   'threadDetail/neutralVote',
   async (payloads = {}, thunkApi) => {
     const { threadId, signal } = payloads;
-    const { rejectWithValue, dispatch, getState } = thunkApi;
+    const { dispatch, getState } = thunkApi;
     const userId = getState().auth.user.id;
     const { upVotesBy, downVotesBy } = getState().threadDetail.data;
     dispatch(voteNeutralThread(userId));
     try {
-      const { data } = await api.setVoteThread(threadId, VoteType.NEUTRAL_VOTE, { signal });
-      return { data };
+      await api.setVoteThread(threadId, VoteType.NEUTRAL_VOTE, { signal });
     } catch (error) {
       dispatch(threadVotesRollback({ upVotesBy, downVotesBy }));
-      console.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
-      return rejectWithValue({ message: error.name === 'AbortError' ? 'Request was aborted' : error.message });
+      toast.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
     }
   }
 );
@@ -136,7 +127,7 @@ export const upVoteComment = createAsyncThunk(
   'threadDetail/upVoteComment',
   async (payloads = {}, thunkApi) => {
     const { commentId, signal } = payloads;
-    const { rejectWithValue, dispatch, getState } = thunkApi;
+    const { dispatch, getState } = thunkApi;
     const authUser = getState().auth.user;
     const threadDetail = getState().threadDetail.data;
     const { upVotesBy, downVotesBy } = threadDetail.comments.find((comment) => comment.id === commentId);
@@ -147,10 +138,7 @@ export const upVoteComment = createAsyncThunk(
       await api.setVoteComment(payload, { signal });
     } catch (error) {
       dispatch(commentVotesRollback({ commentId, upVotesBy, downVotesBy }));
-      console.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
-      return rejectWithValue({
-        message: error.name === 'AbortError' ? 'Request was aborted' : error.message,
-      });
+      toast.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
     }
   }
 );
@@ -159,7 +147,7 @@ export const downVoteComment = createAsyncThunk(
   'threadDetail/downVoteComment',
   async (payloads = {}, thunkApi) => {
     const { commentId, signal } = payloads;
-    const { rejectWithValue, dispatch, getState } = thunkApi;
+    const { dispatch, getState } = thunkApi;
     const authUser = getState().auth.user;
     const threadDetail = getState().threadDetail.data;
     const { upVotesBy, downVotesBy } = threadDetail.comments.find((comment) => comment.id === commentId);
@@ -170,10 +158,7 @@ export const downVoteComment = createAsyncThunk(
       await api.setVoteComment(payload, { signal });
     } catch (error) {
       dispatch(commentVotesRollback({ commentId, upVotesBy, downVotesBy }));
-      console.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
-      return rejectWithValue({
-        message: error.name === 'AbortError' ? 'Request was aborted' : error.message,
-      });
+      toast.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
     }
   }
 );
@@ -182,7 +167,7 @@ export const neutralVoteComment = createAsyncThunk(
   'threadDetail/neutralVoteComment',
   async (payloads = {}, thunkApi) => {
     const { commentId, signal } = payloads;
-    const { rejectWithValue, dispatch, getState } = thunkApi;
+    const { dispatch, getState } = thunkApi;
     const authUser = getState().auth.user;
     const threadDetail = getState().threadDetail.data;
     const { upVotesBy, downVotesBy } = threadDetail.comments.find((comment) => comment.id === commentId);
@@ -193,10 +178,7 @@ export const neutralVoteComment = createAsyncThunk(
       await api.setVoteComment(payload, { signal });
     } catch (error) {
       dispatch(commentVotesRollback({ commentId, upVotesBy, downVotesBy }));
-      console.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
-      return rejectWithValue({
-        message: error.name === 'AbortError' ? 'Request was aborted' : error.message,
-      });
+      toast.error(error.name === 'AbortError' ? 'Request was aborted' : error.message);
     }
   }
 );
