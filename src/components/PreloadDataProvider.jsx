@@ -29,7 +29,12 @@ const PreloadDataProvider = ({ children }) => {
   }, [dispatch]);
 
   if (error) return <FetchDataError error={error} />;
-  if (loading) return null;
+  if (loading)
+    return (
+      <div className="flex-1 flex flex-col justify-center items-center">
+        <span className="loading loading-bars loading-md lg:loading-lg text-accent-darker"></span>
+      </div>
+    );
   return children;
 };
 
