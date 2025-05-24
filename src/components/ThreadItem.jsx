@@ -12,7 +12,6 @@ import { TypeThreadItem } from './types/thread.type';
 const ThreadItem = ({ thread, upVote, downVote }) => {
   const isLiked = thread.upVotesBy.includes(thread.authUser?.id);
   const isDisliked = thread.downVotesBy.includes(thread.authUser?.id);
-  if (!thread.owner) return null;
   return (
     <article className="thread-item flex flex-col gap-1 border-b-2 px-3 py-2 border-b-slate-200 rounded-md">
       <header className="thread-item__header">

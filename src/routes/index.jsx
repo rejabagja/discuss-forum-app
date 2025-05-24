@@ -1,6 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import PageNotFound from '@pages/not-found';
-import PageThreadCreate from '@pages/thread-create';
+import { PageThreadCreate, PageNotFound } from '@pages';
 
 import PublicRoutes from './PublicRoutes';
 import AuthRoutes from './AuthRoutes';

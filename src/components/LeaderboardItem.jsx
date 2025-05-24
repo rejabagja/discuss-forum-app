@@ -1,7 +1,9 @@
 import { leaderboardRingColor } from '@utils';
 import { TypeLeaderboardItem } from './types/leaderboard.type';
+import { useSelector } from 'react-redux';
 
-const LeaderboardItem = ({ user, score, order, authUser }) => {
+const LeaderboardItem = ({ user, score, order }) => {
+  const authUser = useSelector(({ auth }) => auth.user);
   return (
     <div key={user.id} className="flex flex-row justify-between items-center">
       <div className="user-avatar flex flex-row items-center gap-3">

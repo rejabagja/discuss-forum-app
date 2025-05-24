@@ -1,38 +1,54 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { useFetchData } from '@hooks';
-import { ErrorType } from '@constants';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useInput, useContentEditable } from '@hooks/index';
-import { fetchThreads, addThread } from '@states/thunks/threads';
-import { resetCreateStatus, clearError as clearThreadCreateError } from '@states/slices/threads';
+import { createThread } from '@states/thunks/threads';
 
 
 const useThreadCreate = () => {
-  const { error: fetchDataError, isLoading: fetchDataLoading } = useFetchData([fetchThreads]);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isCreateSucceded, setIsCreateSucceded] = useState(false);
   const [title, onChangeTitle] = useInput('');
   const [category, onChangeCategory] = useInput('');
   const [body, , onInputBody] = useContentEditable('');
-  const { error: threadCreateError, isLoading: createLoading, createStatus } = useSelector(({ threads }) => threads);
+  const controller = useRef(null);
+  const isMounted = useRef(false);
 
   const handleCreateThread = () => {
-    dispatch(addThread({ title, body, category }));
+    controller.current?.abort();
+    controller.current = new AbortController();
+
+    const payloads = {
+      payload: { title, body, category },
+      signal: controller.current.signal,
+    };
+    setError(null);
+    setLoading(true);
+    dispatch(createThread(payloads))
+      .unwrap()
+      .then(() => {
+        if (isMounted.current) {
+          setIsCreateSucceded(true);
+        }
+      })
+      .catch((error) => {
+        if (isMounted.current) setError(error.message);
+      })
+      .finally(() => {
+        if (isMounted.current) setLoading(false);
+      });
   };
 
   useEffect(() => {
-    if (createStatus) {
-      navigate('/');
-      dispatch(resetCreateStatus());
-    }
-  }, [navigate, dispatch, createStatus]);
-
-  useEffect(() => {
     document.title = 'Create Thread - Discuss Forum App';
+    controller.current?.abort();
+    isMounted.current = true;
+
     return () => {
       document.title = 'Discuss Forum App';
-      dispatch(clearThreadCreateError());
+      controller.current?.abort();
+      isMounted.current = false;
     };
   }, [dispatch]);
 
@@ -40,9 +56,8 @@ const useThreadCreate = () => {
     title, onChangeTitle,
     body, onInputBody,
     category, onChangeCategory,
-    handleCreateThread, threadCreateError,
-    createLoading, fetchDataError, fetchDataLoading,
-    ErrorType
+    handleCreateThread, error,
+    loading, isCreateSucceded,
   };
 };
 

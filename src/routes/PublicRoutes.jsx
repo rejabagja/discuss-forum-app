@@ -1,7 +1,5 @@
 import { Route } from 'react-router-dom';
-import PageHome from '@pages/home';
-import PageLeaderboards from '@pages/leaderboards';
-import PageThreadDetail from '@pages/thread-detail';
+import { PageHome, PageLeaderboards, PageThreadDetail } from '@pages';
 
 const PublicRoutes = (
   <>

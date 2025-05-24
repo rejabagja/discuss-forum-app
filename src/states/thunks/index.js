@@ -1,42 +1,106 @@
 import api from '@utils/api';
-import { toast } from 'react-toastify';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { AppError } from '@utils';
+import { setAuthUser } from '@states/slices/auth';
+import { setThreadsData } from '@states/slices/threads';
+import { setUsersData } from '@states/slices/users';
+import { setCategories } from '@states/slices/categories';
+import { setLeaderboards } from '@states/slices/leaderboards';
+import { hideLoading, showLoading } from 'react-redux-loading-bar';
 
 
-export const login = createAsyncThunk(
-  'authUser/login',
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const { token } = await api.login(credentials);
-      api.setAccessToken(token);
-      toast.success('Login successfully');
-      const { user } = await api.getOwnProfile();
-      return user;
-    } catch (error) {
-      return rejectWithValue(error.info());
-    }
-  }
-);
-
-export const preloadProcess = createAsyncThunk('preload/process', async () => {
+export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', async (options = {}, thunkApi) => {
+  const { dispatch, rejectWithValue } = thunkApi;
+  const { signal } = options;
+  const token = api.getAccessToken();
   try {
-    const token = api.getAccessToken();
-    if (!token) return;
-    const { user } = await api.getOwnProfile();
-    return user;
+    dispatch(showLoading());
+    if (!token) {
+      throw new AppError('access token not found', 401);
+    }
+    const { data: { user } } = await api.getOwnProfile({ signal });
+    dispatch(setAuthUser(user));
   } catch (error) {
-    console.error(error.message);
+    if (error.statusCode === 401) {
+      if (token) api.removeAccessToken(); // if token exists, remove it
+      return error.message;
+    }
+    if (error.name === 'AbortError') {
+      return rejectWithValue({
+        name: error.name,
+        message: 'Request was aborted',
+        statusCode: 408,
+      });
+    }
+    return rejectWithValue(
+      {
+        name: error.name,
+        message: error.message,
+        statusCode: error.statusCode,
+      }
+    );
+  } finally {
+    dispatch(hideLoading());
   }
 });
 
 export const fetchLeaderboards = createAsyncThunk(
-  'leaderboards/receive',
-  async (_, { rejectWithValue }) => {
+  'leaderboards/fetchLeaderboards',
+  async (options = {}, thunkApi) => {
+    const { rejectWithValue, dispatch } = thunkApi;
+    const { signal } = options;
     try {
-      const { leaderboards } = await api.getLeaderBoards();
-      return leaderboards;
+      dispatch(showLoading());
+      const { data: { leaderboards } } = await api.getLeaderBoards({ signal });
+      dispatch(setLeaderboards(leaderboards));
     } catch (error) {
-      return rejectWithValue(error.info());
+      if (error.name === 'AbortError') {
+        return rejectWithValue({
+          name: error.name,
+          message: 'Request was aborted',
+          statusCode: 408,
+        });
+      }
+      return rejectWithValue({
+        name: error.name,
+        message: error.message,
+        statusCode: error.statusCode,
+      });
+    } finally {
+      dispatch(hideLoading());
+    }
+  }
+);
+
+export const fetchUsersThreads = createAsyncThunk(
+  'combine/fetchUsersThreads',
+  async (options = {}, thunkApi) => {
+    const { dispatch, rejectWithValue } = thunkApi;
+    const { signal } = options;
+    try {
+      dispatch(showLoading());
+      const { data: { threads } } = await api.getThreads({ signal });
+      const { data: { users } } = await api.getUsers({ signal });
+
+      const categories = [...new Set(threads.map((thread) => thread.category))];
+      dispatch(setCategories(categories));
+      dispatch(setUsersData(users));
+      dispatch(setThreadsData(threads));
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        return rejectWithValue({
+          name: error.name,
+          message: 'Request was aborted',
+          statusCode: 408,
+        });
+      }
+      return rejectWithValue({
+        name: error.name,
+        message: error.message,
+        statusCode: error.statusCode,
+      });
+    } finally {
+      dispatch(hideLoading());
     }
   }
 );

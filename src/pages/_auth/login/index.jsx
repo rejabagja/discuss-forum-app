@@ -1,5 +1,5 @@
 import { useLogin } from './hooks';
-import FormLogin from '@components/FormLogin';
+import { FormLogin } from '@components';
 import AuthPageWrapper from '@layouts/AuthPageWrapper';
 
 const PageLogin = () => {
@@ -9,7 +9,7 @@ const PageLogin = () => {
     password,
     onChangePassword,
     handleLogin,
-    isLoading,
+    loading,
     error,
   } = useLogin();
 
@@ -21,12 +21,12 @@ const PageLogin = () => {
     >
       <FormLogin
         onSubmitHandler={handleLogin}
-        error={error?.message}
+        error={error}
         email={email}
         onChangeEmail={onChangeEmail}
         password={password}
         onChangePassword={onChangePassword}
-        isLoading={isLoading}
+        isLoading={loading}
       />
     </AuthPageWrapper>
   );

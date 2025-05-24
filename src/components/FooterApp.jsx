@@ -2,7 +2,7 @@ import { FiBarChart2, FiLogIn, FiLogOut } from 'react-icons/fi';
 import { BiChat } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { clearAuthUser } from '@states/slices/auth-user';
+import { clearAuthUser } from '@states/slices/auth';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import api from '@utils/api';
@@ -11,7 +11,7 @@ import { useOnline } from '@hooks';
 const FooterApp = () => {
   const dispatch = useDispatch();
   const isOnline = useOnline();
-  const authUser = useSelector(({ authUser }) => authUser.data);
+  const authUser = useSelector(({ auth }) => auth.user);
 
   const onLogout = () => {
     if (!isOnline) return;

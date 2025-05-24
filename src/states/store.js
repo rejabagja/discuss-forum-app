@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authUser from './slices/auth-user';
-import preload from './slices/preload';
+import auth from './slices/auth';
 import categories from './slices/categories';
 import leaderboards from './slices/leaderboards';
 import threadDetail from './slices/thread-detail';
@@ -11,7 +10,7 @@ import { loadingBarReducer } from 'react-redux-loading-bar';
 
 const store = configureStore({
   reducer: {
-    authUser, preload, categories, leaderboards, threadDetail, threads, users, theme,
+    auth, categories, leaderboards, threadDetail, threads, users, theme,
     loadingBar: loadingBarReducer
   },
 });

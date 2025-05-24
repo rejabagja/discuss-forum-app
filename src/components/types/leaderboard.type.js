@@ -9,11 +9,9 @@ export const LeaderboardsShape = {
 
 export const TypeLeaderboardList = {
   leaderboards: PropTypes.arrayOf(PropTypes.shape(LeaderboardsShape)).isRequired,
-  authUser: PropTypes.shape(UserShape),
 };
 
 export const TypeLeaderboardItem = {
   ...LeaderboardsShape,
   order: PropTypes.number.isRequired,
-  authUser: PropTypes.shape(UserShape),
 };

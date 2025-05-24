@@ -48,21 +48,19 @@ export const leaderboardRingColor = (order) => {
   }
 };
 
+export class APIError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.name = 'APIError';
+    this.statusCode = statusCode;
+  }
+}
+
 export class AppError extends Error {
-  constructor(message, statusCode, type) {
+  constructor(message, statusCode) {
     super(message);
     this.name = 'AppError';
     this.statusCode = statusCode;
-    this.type = type;
-  }
-
-  info() {
-    return {
-      name: this.name,
-      message: this.message,
-      statusCode: this.statusCode,
-      type: this.type,
-    };
   }
 }
 
@@ -80,7 +78,10 @@ export const showAuthRequiredToast = (action) => {
     action,
     ' action.'
   );
-  toast.info(toastContent);
+  toast.info(toastContent, {
+    toastId: 'auth-required',
+    autoClose: 3000,
+  });
 };
 
 export const getInitialTheme = () => {

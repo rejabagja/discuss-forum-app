@@ -1,25 +1,54 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useInput } from '@hooks';
-import { ErrorType } from '@constants';
-import { createUser } from '@states/thunks/users';
-import { clearError as clearRegisterError } from '@states/slices/users';
+import { registerUser } from '@states/thunks/auth';
 
 
 const useRegister = () => {
-  const { isLoading: registerLoading, error } = useSelector(({ users }) => users);
   const dispatch = useDispatch();
-  const [name, onChangeName] = useInput('');
-  const [email, onChangeEmail] = useInput('');
-  const [password, onChangePassword] = useInput('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [name, onChangeName, setName] = useInput('');
+  const [email, onChangeEmail, setEmail] = useInput('');
+  const [password, onChangePassword, setPassword] = useInput('');
+  const controller =  useRef(null);
+  const isMounted = useRef(false);
 
   const handleRegister = (event) => {
     event.preventDefault();
-    dispatch(createUser({ name, email, password }));
+    controller.current?.abort();
+    controller.current = new AbortController();
+    setError(null);
+    setLoading(true);
+
+    const payloads = {
+      payload: { name, email, password },
+      signal: controller.current.signal,
+    };
+    dispatch(registerUser(payloads))
+      .unwrap()
+      .then(() => {
+        if (isMounted.current) {
+          setName('');
+          setEmail('');
+          setPassword('');
+        }
+      })
+      .catch((error) => {
+        if (isMounted.current) setError(error);
+      })
+      .finally(() => {
+        if (isMounted.current) setLoading(false);
+      });
   };
 
   useEffect(() => {
-    return () => dispatch(clearRegisterError());
+    controller.current?.abort();
+    isMounted.current = true;
+    return () => {
+      controller.current?.abort();
+      isMounted.current = false;
+    };
   }, [dispatch]);
 
   return {
@@ -30,9 +59,8 @@ const useRegister = () => {
     password,
     onChangePassword,
     handleRegister,
-    registerLoading,
-    error,
-    ErrorType
+    loading,
+    error
   };
 };
 

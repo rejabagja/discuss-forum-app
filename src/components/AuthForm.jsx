@@ -7,7 +7,7 @@ const AuthForm = ({ children, onSubmitHandler, error }) => {
       className="flex flex-col gap-3"
       onSubmit={onSubmitHandler}
     >
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-red-500 text-sm">"{error}"</p>}
       {children}
     </form>
   );
