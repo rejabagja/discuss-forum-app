@@ -9,11 +9,11 @@ const leaderboardsSlice = createSlice({
   name: 'leaderboards',
   initialState,
   reducers: {
-    setLeaderboards: (state, action) => {
+    setLeaderboardsData: (state, action) => {
       state.data = action.payload;
     }
   }
 });
 
-export const { setLeaderboards } = leaderboardsSlice.actions;
+export const { setLeaderboardsData } = leaderboardsSlice.actions;
 export default leaderboardsSlice.reducer;

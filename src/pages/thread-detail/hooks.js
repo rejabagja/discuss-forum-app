@@ -8,12 +8,12 @@ import {
   downVoteComment, neutralVoteComment,
   createComment, fetchThread
 } from '@states/thunks/thread_detail';
-import { showAuthRequiredToast } from '@utils';
-import { toast } from 'react-toastify';
+import { showAuthRequiredToast, showToastSuccess, showToastError, abortPrevRequest } from '@utils';
 
 
 const useThreadDetail = () => {
   const { threadId } = useParams();
+  const controllers = useRef({});
   const dispatch = useDispatch();
   const [fetchDataError, setFetchDataError] = useState(null);
   const [fetchDataLoading, setFetchDataLoading] = useState(true);
@@ -21,88 +21,73 @@ const useThreadDetail = () => {
   const [commentContent, setCommentContent, onInputComment] = useContentEditable('');
   const thread = useSelector(({ threadDetail }) => threadDetail.data);
   const authUser = useSelector(({ auth }) => auth.user);
-  const controllers = useRef({});
 
+  const handleVote = (args) => {
+    const {
+      key,
+      isUpvote,
+      isNeutral,
+      actionUp,
+      actionDown,
+      actionNeutral
+    } = args;
+
+    const controller = abortPrevRequest(`vote-${key}`, controllers);
+    controllers.current[`vote-${key}`] = controller;
+
+    const action = isNeutral ? actionNeutral : (isUpvote ? actionUp : actionDown);
+    return (payload) =>
+      dispatch(action({ ...payload, signal: controller.signal }))
+        .unwrap()
+        .catch((error) => {
+          if (error.name === 'AbortError') return;
+          showToastError(`vote-${key.split('-')[0]}-error`, error.message);
+        });
+  };
 
   const handleVoteThread = (type) => {
-    if (!authUser) {
-      return toast.isActive('auth-required') ? null : showAuthRequiredToast('thread');
-    }
+    if (!authUser) return showAuthRequiredToast('thread vote');
+    const isUpvote = type === 'up';
+    const isNeutral = isUpvote
+      ? thread.upVotesBy.includes(authUser?.id)
+      : thread.downVotesBy.includes(authUser?.id);
 
-    if (controllers.current[`vote-thread-${threadId}`] && !controllers.current[`vote-thread-${threadId}`].signal.aborted) {
-      controllers.current[`vote-thread-${threadId}`].abort();
-    }
-
-    const controller = new AbortController();
-    controllers.current[`vote-thread-${threadId}`] = controller;
-
-    const payloads = {
-      threadId,
-      signal: controller.signal,
+    const payload = {
+      threadId: thread.id,
     };
-
-    if (type === 'up') {
-      dispatch(
-        thread.upVotesBy.includes(authUser.id)
-          ? neutralVoteThreadDetail(payloads)
-          : upVoteThreadDetail(payloads)
-      );
-    } else if (type === 'down') {
-      dispatch(
-        thread.downVotesBy.includes(authUser.id)
-          ? neutralVoteThreadDetail(payloads)
-          : downVoteThreadDetail(payloads)
-      );
-    }
+    handleVote({
+      key: thread.id,
+      isUpvote,
+      isNeutral,
+      actionUp: upVoteThreadDetail,
+      actionDown: downVoteThreadDetail,
+      actionNeutral: neutralVoteThreadDetail
+    })(payload);
   };
 
   const handleVoteComment = (comment, type) => {
-    if (!authUser) {
-      return toast.isActive('auth-required') ? null : showAuthRequiredToast('comment');
-    }
-
-    if (
-      controllers.current[`vote-comment-${comment.id}`] &&
-      !controllers.current[`vote-comment-${comment.id}`].signal.aborted
-    ) {
-      controllers.current[`vote-comment-${comment.id}`].abort();
-    }
-
-    const controller = new AbortController();
-    controllers.current[`vote-comment-${comment.id}`] = controller;
-
-    const payloads = {
+    if (!authUser) return showAuthRequiredToast('vote comment');
+    const isUpvote = type === 'up';
+    const isNeutral = isUpvote
+      ? comment.upVotesBy.includes(authUser?.id)
+      : comment.downVotesBy.includes(authUser?.id);
+    const payload = {
       commentId: comment.id,
-      signal: controller.signal,
+      threadId: thread.id,
     };
-
-    if (type === 'up') {
-      dispatch(
-        comment.upVotesBy.includes(authUser.id)
-          ? neutralVoteComment(payloads)
-          : upVoteComment(payloads)
-      );
-    } else if (type === 'down') {
-      dispatch(
-        comment.downVotesBy.includes(authUser.id)
-          ? neutralVoteComment(payloads)
-          : downVoteComment(payloads)
-      );
-    }
+    handleVote({
+      key: `${comment.id}`,
+      isUpvote,
+      isNeutral,
+      actionUp: upVoteComment,
+      actionDown: downVoteComment,
+      actionNeutral: neutralVoteComment
+    })(payload);
   };
 
-  const handleUpVoteThread = () => handleVoteThread('up');
-  const handleDownVoteThread = () => handleVoteThread('down');
-
-  const handleUpVoteComment = (comment) => handleVoteComment(comment, 'up');
-  const handleDownVoteComment = (comment) => handleVoteComment(comment, 'down');
-
   const handleCreateComment = () => {
-    if (controllers.current[`create-${threadId}`] && !controllers.current[`create-${threadId}`].signal.aborted) {
-      controllers.current[`create-${threadId}`].abort();
-    }
-    const controller = new AbortController();
-    controllers.current[`create-${threadId}`] = controller;
+    const controller = abortPrevRequest(`create-comment-${threadId}`, controllers);
+    controllers.current[`create-comment-${threadId}`] = controller;
 
     setCreateCommentLoading(true);
     const payloads = {
@@ -111,10 +96,15 @@ const useThreadDetail = () => {
     };
     dispatch(createComment(payloads))
       .unwrap()
-      .then(() => {
+      .then((res) => {
         setCommentContent('');
+        const toastMessage = `${res.message} successfully`;
+        showToastSuccess('create-comment-success', toastMessage);
       })
-      .catch(() => {})
+      .catch((error) => {
+        if (error.name === 'AbortError') return;
+        showToastError('create-comment-error', error.message);
+      })
       .finally(() => setCreateCommentLoading(false));
   };
 
@@ -150,11 +140,18 @@ const useThreadDetail = () => {
   }, [dispatch, threadId]);
 
   return {
-    thread, createCommentLoading,
-    authUser, fetchDataError, fetchDataLoading,
-    handleUpVoteThread, handleDownVoteThread,
-    handleUpVoteComment, handleDownVoteComment,
-    handleCreateComment, commentContent, onInputComment,
+    thread,
+    createCommentLoading,
+    authUser,
+    fetchDataError,
+    fetchDataLoading,
+    handleUpVoteThread: () => handleVoteThread('up'),
+    handleDownVoteThread: () => handleVoteThread('down'),
+    handleUpVoteComment: (comment) => handleVoteComment(comment, 'up'),
+    handleDownVoteComment: (comment) => handleVoteComment(comment, 'down'),
+    handleCreateComment,
+    commentContent,
+    onInputComment,
   };
 };
 

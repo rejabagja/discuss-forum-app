@@ -57,7 +57,8 @@ async function register(payload, options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { message, data: { user } } = await response.json();
+  return { message, user };
 }
 
 async function login(credentials, options = {}) {
@@ -72,7 +73,8 @@ async function login(credentials, options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { data: { token }, message } = await response.json();
+  return { token, message };
 }
 
 async function getOwnProfile(options = {}) {
@@ -80,7 +82,8 @@ async function getOwnProfile(options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { data: { user }, message } = await response.json();
+  return { user, message };
 }
 
 async function getUsers(options = {}) {
@@ -88,7 +91,8 @@ async function getUsers(options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { data: { users }, message } = await response.json();
+  return { users, message };
 }
 
 async function getThreads(options = {}) {
@@ -96,7 +100,8 @@ async function getThreads(options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { data: { threads }, message } = await response.json();
+  return { threads, message };
 }
 
 async function createThread(payload, options = {}) {
@@ -108,7 +113,8 @@ async function createThread(payload, options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { data: { thread }, message } = await response.json();
+  return { thread, message };
 }
 
 async function getThreadDetail(threadId, options = {}) {
@@ -116,7 +122,8 @@ async function getThreadDetail(threadId, options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { data: { detailThread }, message } = await response.json();
+  return { detailThread, message };
 }
 
 async function setVoteThread(threadId, voteType, options = {}) {
@@ -130,7 +137,8 @@ async function setVoteThread(threadId, voteType, options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { data: { vote }, message } = await response.json();
+  return { vote, message };
 }
 
 async function createComment(payload, options = {}) {
@@ -145,7 +153,8 @@ async function createComment(payload, options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { data: { comment }, message } = await response.json();
+  return { comment, message };
 }
 
 async function setVoteComment(payload, options = {}) {
@@ -157,7 +166,8 @@ async function setVoteComment(payload, options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { data: { vote }, message } = await response.json();
+  return { vote, message };
 }
 
 async function getLeaderBoards(options = {}) {
@@ -165,7 +175,8 @@ async function getLeaderBoards(options = {}) {
   if (!response.ok) {
     await handleResponseError(response);
   }
-  return response.json();
+  const { data: { leaderboards }, message } = await response.json();
+  return { leaderboards, message };
 }
 
 

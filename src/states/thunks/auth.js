@@ -1,8 +1,5 @@
-import React from 'react';
 import api from '@utils/api';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
 import { setAuthUser } from '@states/slices/auth';
 
 
@@ -12,27 +9,13 @@ export const registerUser = createAsyncThunk(
     const { rejectWithValue } = thunkApi;
     const { payload, signal } = payloads;
     try {
-      const { message } = await api.register(payload, {
-        signal: signal || thunkApi.signal,
-      });
-      const toastContent = React.createElement(
-        'div',
-        null,
-        `${message} successfully. `,
-        React.createElement(
-          Link,
-          { to: '/login', className: 'text-blue-500 underline' },
-          'Login here'
-        )
-      );
-      toast.success(toastContent);
-      return message;
+      const { message, user } = await api.register(payload, { signal });
+      return { message, user };
     } catch (error) {
-      if (error.name === 'AbortError') {
-        toast.error('Request was aborted');
-        error.message = '';
-      }
-      return rejectWithValue(error.message);
+      return rejectWithValue({
+        name: error.name,
+        message: error.name === 'AbortError' ? 'Registration request was aborted. Please try again.' : error.message,
+      });
     }
   }
 );
@@ -40,22 +23,19 @@ export const registerUser = createAsyncThunk(
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (payloads, thunkApi) => {
-    const { rejectWithValue, dispatch, getState } = thunkApi;
+    const { rejectWithValue, dispatch } = thunkApi;
     const { credentials, signal } = payloads;
     try {
-      const { data: { token } } = await api.login(credentials, { signal: signal || thunkApi.signal });
+      const { token } = await api.login(credentials, { signal });
       api.setAccessToken(token);
-      const { data: { user }, message } = await api.getOwnProfile({ signal: signal || thunkApi.signal });
+      const { user } = await api.getOwnProfile({ signal });
       dispatch(setAuthUser(user));
-      const authedUser = getState().auth.user;
-      toast.success(`Welcome back, ${authedUser.name}`);
-      return message;
+      return { user, message: 'Login successful' };
     } catch (error) {
-      if (error.name === 'AbortError') {
-        toast.error('Request was aborted');
-        error.message = '';
-      }
-      return rejectWithValue(error.message);
+      return rejectWithValue({
+        name: error.name,
+        message: error.name === 'AbortError' ? 'Login request was aborted. Please try again.' : error.message,
+      });
     }
   }
 );

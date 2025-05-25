@@ -15,8 +15,8 @@ const PageHome = () => {
     filteredThreads,
     categories,
     selectedCategory,
-    handleDownVote,
-    handleUpVote,
+    handleDownVoteThread,
+    handleUpVoteThread,
     toggleSelectedCategory,
     fetchDataError,
     fetchDataLoading,
@@ -45,8 +45,8 @@ const PageHome = () => {
         )}
         <ThreadList
           threads={filteredThreads}
-          handleDownVote={handleDownVote}
-          handleUpVote={handleUpVote}
+          handleDownVote={handleDownVoteThread}
+          handleUpVote={handleUpVoteThread}
         />
       </div>
 

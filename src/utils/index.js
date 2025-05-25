@@ -65,28 +65,54 @@ export class AppError extends Error {
 }
 
 export const showAuthRequiredToast = (action) => {
-  const toastContent = React.createElement(
-    'div',
-    null,
-    'You must be ',
-    React.createElement(
-      Link,
-      { to: '/login', className: 'text-blue-500 underline font-medium' },
-      'logged in'
-    ),
-    ' to perform ',
-    action,
-    ' action.'
-  );
-  toast.info(toastContent, {
-    toastId: 'auth-required',
-    autoClose: 3000,
-  });
+  const toastId = 'auth-required';
+  if (!toast.isActive(toastId)) {
+    toast.dismiss();
+    const toastContent = React.createElement(
+      'div',
+      null,
+      'You must be ',
+      React.createElement(
+        Link,
+        { to: '/login', className: 'text-blue-500 underline font-medium' },
+        'logged in'
+      ),
+      ' to perform ',
+      action,
+      ' action.'
+    );
+    toast.info(toastContent, {
+      toastId,
+      autoClose: 3000,
+    });
+  }
+};
+
+export const showToastError = (id, message) => {
+  if (!toast.isActive(id)) {
+    toast.dismiss();
+    toast.error(message, { toastId: id });
+  }
+};
+
+export const showToastSuccess = (id, message) => {
+  if (!toast.isActive(id)) {
+    toast.dismiss();
+    toast.success(message, { toastId: id });
+  }
 };
 
 export const getInitialTheme = () => {
   const theme = localStorage.getItem('theme');
   return ['light', 'dark'].includes(theme) ? theme : 'light';
+};
+
+export const abortPrevRequest = (key, controllersRef) => {
+  if (controllersRef.current[key]?.signal.aborted === false) {
+    controllersRef.current[key].abort();
+  }
+  const controller = new AbortController();
+  return controller;
 };
 
 export const setAppTheme = (theme) => localStorage.setItem('theme', theme);

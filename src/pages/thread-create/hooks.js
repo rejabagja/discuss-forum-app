@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useInput, useContentEditable } from '@hooks/index';
 import { createThread } from '@states/thunks/threads';
+import { toast } from 'react-toastify';
 
 
 const useThreadCreate = () => {
@@ -27,13 +28,20 @@ const useThreadCreate = () => {
     setLoading(true);
     dispatch(createThread(payloads))
       .unwrap()
-      .then(() => {
+      .then((res) => {
         if (isMounted.current) {
           setIsCreateSucceded(true);
+          toast.dismiss();
+          toast.success(`${res.message} successfully`);
         }
       })
       .catch((error) => {
-        if (isMounted.current) setError(error.message);
+        if (isMounted.current) {
+          if (error.name === 'AbortError') {
+            return;
+          }
+          setError(error.message);
+        }
       })
       .finally(() => {
         if (isMounted.current) setLoading(false);
