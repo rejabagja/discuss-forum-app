@@ -28,7 +28,7 @@ const ThreadDetailContent = ({
       <footer className="thread-footer flex gap-3 text-sm">
         <button
           className="thread-item__upvote-button flex flex-row gap-1 items-center"
-          title="like"
+          title="upvote"
           onClick={() => handleUpVote()}
         >
           {isLiked ? (
@@ -42,7 +42,7 @@ const ThreadDetailContent = ({
         </button>
         <button
           className="thread-item__downvote-button flex flex-row gap-1 items-center"
-          title="dislike"
+          title="downvote"
           onClick={() => handleDownVote()}
         >
           {isDisliked ? (

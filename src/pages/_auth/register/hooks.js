@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useInput } from '@hooks';
 import { registerUser } from '@states/thunks/auth';
+import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 
 const useRegister = () => {
@@ -16,7 +18,9 @@ const useRegister = () => {
 
   const handleRegister = (event) => {
     event.preventDefault();
-    controller.current?.abort();
+    if (controller.current && !controller.current.signal.aborted) {
+      controller.current.abort();
+    }
     controller.current = new AbortController();
     setError(null);
     setLoading(true);
@@ -27,11 +31,23 @@ const useRegister = () => {
     };
     dispatch(registerUser(payloads))
       .unwrap()
-      .then(() => {
+      .then((res) => {
         if (isMounted.current) {
           setName('');
           setEmail('');
           setPassword('');
+          toast.success(
+            React.createElement(
+              'div',
+              null,
+              `${res.message} successfully. `,
+              React.createElement(
+                Link,
+                { to: '/login', className: 'text-blue-500 underline' },
+                'Login here'
+              )
+            )
+          );
         }
       })
       .catch((error) => {

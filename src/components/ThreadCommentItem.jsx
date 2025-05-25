@@ -32,6 +32,7 @@ const ThreadCommentItem = ({
         <button
           className="flex flex-row gap-1 items-center text-sm"
           onClick={() => handleUpVote(comment)}
+          title="upvote"
         >
           {isLiked ? (
             <BiSolidLike className="w-4 h-4" />
@@ -45,6 +46,7 @@ const ThreadCommentItem = ({
         <button
           className="flex flex-row gap-1 items-center"
           onClick={() => handleDownVote(comment)}
+          title="downvote"
         >
           {isDisliked ? (
             <BiSolidDislike className="w-4 h-4" />

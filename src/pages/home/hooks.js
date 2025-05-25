@@ -5,14 +5,14 @@ import {
   downVoteThread,
   neutralVoteThread,
 } from '@states/thunks/threads';
-import { showAuthRequiredToast } from '@utils';
+import { showAuthRequiredToast, showToastError, abortPrevRequest } from '@utils';
 import { useEffect, useRef, useState } from 'react';
 import { fetchUsersThreads } from '@states/thunks';
-import { toast } from 'react-toastify';
 
 
 const useHome = () => {
   const dispatch = useDispatch();
+  const controllers = useRef({});
   const [fetchDataError, setFetchDataError] = useState(null);
   const [fetchDataLoading, setFetchDataLoading] = useState(true);
   const users = useSelector(({ users }) => users.data);
@@ -20,7 +20,6 @@ const useHome = () => {
   const authUser = useSelector(({ auth }) => auth.user);
   const isAuthed = Boolean(authUser);
   const { data: categories, selectedCategory } = useSelector(({ categories }) => categories);
-  const controllers = useRef({});
 
   const threadsOwnerAuth = threads.map((thread) => ({
     ...thread,
@@ -41,45 +40,46 @@ const useHome = () => {
     );
   };
 
-  const handleVote = (thread, type) => {
-    if (!isAuthed) {
-      return toast.isActive('auth-required') ? null : showAuthRequiredToast('thread');
-    }
+  const handleVote = (args) => {
+    const {
+      key,
+      isUpvote,
+      isNeutral,
+      actionUp,
+      actionDown,
+      actionNeutral
+    } = args;
 
-    const threadId = thread.id;
-    const haveController = controllers.current[`vote-thread-${threadId}`];
-    if (haveController && !haveController.signal.aborted) {
-      controllers.current[`vote-thread-${threadId}`].abort();
-    }
+    const controller = abortPrevRequest(key, controllers);
+    controllers.current[key] = controller;
 
-    const controller = new AbortController();
-    controllers.current[`vote-thread-${threadId}`] = controller;
-
-    delete thread.owner;
-    delete thread.authUser;
-
-    const payloads = {
-      thread,
-      signal: controller.signal,
-    };
-
-    if (type === 'up') {
-      dispatch(
-        thread.upVotesBy.includes(authUser.id)
-          ? neutralVoteThread(payloads)
-          : upVoteThread(payloads)
-      );
-    } else if (type === 'down') {
-      dispatch(
-        thread.downVotesBy.includes(authUser.id)
-          ? neutralVoteThread(payloads)
-          : downVoteThread(payloads)
-      );
-    }
+    const action = isNeutral ? actionNeutral : isUpvote ? actionUp : actionDown;
+    return (payload) =>
+      dispatch(action({ ...payload, signal: controller.signal }))
+        .unwrap()
+        .catch((error) => {
+          showToastError(`vote-${key.split('-')[0]}-error`, error.message);
+        });
   };
 
-  const handleUpVote = (thread) => handleVote(thread, 'up');
-  const handleDownVote = (thread) => handleVote(thread, 'down');
+  const handleVoteThread = (thread, type) => {
+    if (!authUser) return showAuthRequiredToast('thread vote');
+    const threadId = thread.id;
+    const isUpvote = type === 'up';
+    const isNeutral = isUpvote
+      ? thread.upVotesBy.includes(authUser.id)
+      : thread.downVotesBy.includes(authUser.id);
+
+    const payload = { threadId };
+    handleVote({
+      key: threadId,
+      isUpvote,
+      isNeutral,
+      actionUp: upVoteThread,
+      actionDown: downVoteThread,
+      actionNeutral: neutralVoteThread
+    })(payload);
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -108,10 +108,15 @@ const useHome = () => {
   }, [dispatch]);
 
   return {
-    isAuthed, filteredThreads,
-    categories, selectedCategory,
-    handleUpVote, handleDownVote,
-    toggleSelectedCategory, fetchDataError, fetchDataLoading,
+    isAuthed,
+    filteredThreads,
+    categories,
+    selectedCategory,
+    handleUpVoteThread: (thread) => handleVoteThread(thread, 'up'),
+    handleDownVoteThread: (thread) => handleVoteThread(thread, 'down'),
+    toggleSelectedCategory,
+    fetchDataError,
+    fetchDataLoading,
   };
 };
 

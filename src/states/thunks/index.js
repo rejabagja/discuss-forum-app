@@ -22,21 +22,14 @@ export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', asy
     dispatch(setAuthUser(user));
   } catch (error) {
     if (error.statusCode === 401) {
-      if (token) api.removeAccessToken(); // if token exists, remove it
-      return error.message;
-    }
-    if (error.name === 'AbortError') {
-      return rejectWithValue({
-        name: error.name,
-        message: 'Request was aborted',
-        statusCode: 408,
-      });
+      if (error.name !== 'AppError') api.removeAccessToken(); // if token exists, remove it
+      return;
     }
     return rejectWithValue(
       {
         name: error.name,
-        message: error.message,
-        statusCode: error.statusCode,
+        message: error.name === 'AbortError' ? 'Request was aborted' : error.message,
+        statusCode: error.name === 'AbortError' ? 408 : error.statusCode,
       }
     );
   } finally {
@@ -54,17 +47,10 @@ export const fetchLeaderboards = createAsyncThunk(
       const { leaderboards } = await api.getLeaderBoards({ signal });
       dispatch(setLeaderboardsData(leaderboards));
     } catch (error) {
-      if (error.name === 'AbortError') {
-        return rejectWithValue({
-          name: error.name,
-          message: 'Request was aborted',
-          statusCode: 408,
-        });
-      }
       return rejectWithValue({
         name: error.name,
-        message: error.message,
-        statusCode: error.statusCode,
+        message: error.name === 'AbortError' ? 'Request was aborted' : error.message,
+        statusCode: error.name === 'AbortError' ? 408 : error.statusCode,
       });
     } finally {
       dispatch(hideLoading());
@@ -92,17 +78,10 @@ export const fetchUsersThreads = createAsyncThunk(
       dispatch(setUsersData(users));
       dispatch(setThreadsData(threads));
     } catch (error) {
-      if (error.name === 'AbortError') {
-        return rejectWithValue({
-          name: error.name,
-          message: 'Request was aborted',
-          statusCode: 408,
-        });
-      }
       return rejectWithValue({
         name: error.name,
-        message: error.message,
-        statusCode: error.statusCode,
+        message: error.name === 'AbortError' ? 'Request was aborted' : error.message,
+        statusCode: error.name === 'AbortError' ? 408 : error.statusCode,
       });
     } finally {
       dispatch(hideLoading());

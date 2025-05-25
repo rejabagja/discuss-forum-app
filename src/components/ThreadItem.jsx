@@ -33,7 +33,7 @@ const ThreadItem = ({ thread, upVote, downVote }) => {
       <footer className="thread-item__footer flex justify-start items-center gap-4 py-3 text-sm">
         <button
           className="thread-item__upvote-button flex flex-row gap-1 items-center"
-          title="like"
+          title="upvote"
           onClick={() => upVote(thread)}
         >
           <span className="text-lg">
@@ -45,7 +45,7 @@ const ThreadItem = ({ thread, upVote, downVote }) => {
         </button>
         <button
           className="thread-item__downvote-button flex flex-row gap-1 items-center"
-          title="dislike"
+          title="downvote"
           onClick={() => downVote(thread)}
         >
           <span className="text-lg">

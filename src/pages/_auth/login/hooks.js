@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useInput } from '@hooks/index';
 import { useDispatch } from 'react-redux';
 import { loginUser } from '@states/thunks/auth';
+import { toast } from 'react-toastify';
 
 
 const useLogin = () => {
@@ -15,7 +16,9 @@ const useLogin = () => {
 
   const handleLogin = (event) => {
     event.preventDefault();
-    controller.current?.abort();
+    if (controller.current && !controller.current.signal.aborted) {
+      controller.current.abort();
+    }
     controller.current = new AbortController();
 
     setError(null);
@@ -26,8 +29,11 @@ const useLogin = () => {
     };
     dispatch(loginUser(payloads))
       .unwrap()
+      .then((res) => {
+        toast.success(`Welcome back, ${res.user.name}`);
+      })
       .catch((error) => {
-        if (isMounted.current) setError(error);
+        if (isMounted.current) setError(error.message);
       })
       .finally(() => {
         if (isMounted.current) setLoading(false);
