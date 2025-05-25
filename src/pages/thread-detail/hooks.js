@@ -83,7 +83,7 @@ const useThreadDetail = () => {
   };
 
   const handleCreateComment = () => {
-    const controller = abortPrevRequest(`create-comment-${threadId}`);
+    const controller = abortPrevRequest(`create-comment-${threadId}`, controllers);
     controllers.current[`create-comment-${threadId}`] = controller;
 
     setCreateCommentLoading(true);
