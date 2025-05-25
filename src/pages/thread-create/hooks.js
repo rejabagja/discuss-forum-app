@@ -38,8 +38,6 @@ const useThreadCreate = () => {
       .catch((error) => {
         if (isMounted.current) {
           if (error.name === 'AbortError') {
-            toast.dismiss();
-            toast.error(error.message);
             return;
           }
           setError(error.message);

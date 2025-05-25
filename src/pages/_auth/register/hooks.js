@@ -51,7 +51,7 @@ const useRegister = () => {
         }
       })
       .catch((error) => {
-        if (isMounted.current) setError(error);
+        if (isMounted.current) setError(error.message);
       })
       .finally(() => {
         if (isMounted.current) setLoading(false);
