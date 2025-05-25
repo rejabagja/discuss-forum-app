@@ -32,14 +32,17 @@ const useThreadDetail = () => {
       actionNeutral
     } = args;
 
-    const controller = abortPrevRequest(key, controllers);
-    controllers.current[key] = controller;
+    const controller = abortPrevRequest(`vote-${key}`, controllers);
+    controllers.current[`vote-${key}`] = controller;
 
     const action = isNeutral ? actionNeutral : (isUpvote ? actionUp : actionDown);
     return (payload) =>
       dispatch(action({ ...payload, signal: controller.signal }))
         .unwrap()
-        .catch((error) => showToastError(`vote-${key.split('-')[0]}-error`, error.message));
+        .catch((error) => {
+          if (error.name === 'AbortError') return;
+          showToastError(`vote-${key.split('-')[0]}-error`, error.message);
+        });
   };
 
   const handleVoteThread = (type) => {
@@ -99,6 +102,7 @@ const useThreadDetail = () => {
         showToastSuccess('create-comment-success', toastMessage);
       })
       .catch((error) => {
+        if (error.name === 'AbortError') return;
         showToastError('create-comment-error', error.message);
       })
       .finally(() => setCreateCommentLoading(false));

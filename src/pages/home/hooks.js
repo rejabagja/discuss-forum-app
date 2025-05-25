@@ -50,14 +50,15 @@ const useHome = () => {
       actionNeutral
     } = args;
 
-    const controller = abortPrevRequest(key, controllers);
-    controllers.current[key] = controller;
+    const controller = abortPrevRequest(`vote-${key}`, controllers);
+    controllers.current[`vote-${key}`] = controller;
 
     const action = isNeutral ? actionNeutral : isUpvote ? actionUp : actionDown;
     return (payload) =>
       dispatch(action({ ...payload, signal: controller.signal }))
         .unwrap()
         .catch((error) => {
+          if (error.name === 'AbortError') return;
           showToastError(`vote-${key.split('-')[0]}-error`, error.message);
         });
   };
