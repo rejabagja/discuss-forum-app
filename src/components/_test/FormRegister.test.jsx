@@ -28,7 +28,7 @@ describe('FormRegister Component', () => {
   });
 
   const createFormWrapper = (customProps = {}) => {
-    const onSubmitHandler = vi.fn();
+    const onSubmitHandler = vi.fn((e) => e.preventDefault());
     const onChangeName = vi.fn();
     const onChangeEmail = vi.fn();
     const onChangePassword = vi.fn();
