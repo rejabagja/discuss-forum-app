@@ -12,17 +12,19 @@ import { hideLoading, showLoading } from 'react-redux-loading-bar';
 export const fetchPreloadData = createAsyncThunk('preload/fetchPreloadData', async (options = {}, thunkApi) => {
   const { dispatch, rejectWithValue } = thunkApi;
   const { signal } = options;
-  const token = api.getAccessToken();
   try {
     dispatch(showLoading());
+    const token = api.getAccessToken();
     if (!token) {
-      throw new AppError('access token not found', 401);
+      throw new AppError('access token is missing', 401);
     }
     const { user } = await api.getOwnProfile({ signal });
     dispatch(setAuthUser(user));
   } catch (error) {
     if (error.statusCode === 401) {
-      if (error.name !== 'AppError') api.removeAccessToken(); // if token exists, remove it
+      if (error.name !== 'AppError') {
+        api.removeAccessToken(); // if token exists, remove it
+      }
       return;
     }
     return rejectWithValue(

@@ -32,6 +32,9 @@ export const loginUser = createAsyncThunk(
       dispatch(setAuthUser(user));
       return { user, message: 'Login successful' };
     } catch (error) {
+      if (api.getAccessToken()) { // if fetch user fails, remove token
+        api.removeAccessToken();
+      }
       return rejectWithValue({
         name: error.name,
         message: error.name === 'AbortError' ? 'Login request was aborted. Please try again.' : error.message,

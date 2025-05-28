@@ -38,7 +38,7 @@ const FormThreadCreate = ({
           className="max-h-[450px] overflow-y-auto"
         />
         <button
-          type="submit"
+          type="button"
           className="btn btn-accent"
           onClick={handleCreateThread}
           disabled={isLoading}
