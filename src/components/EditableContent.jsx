@@ -12,8 +12,8 @@ const EditableContent = ({
   const handleInput = (event) => {
     onInput(event);
     setIsEmpty(
-      event.target.innerText.trim() === '' &&
-        event.target.innerHTML.trim() === ''
+      (event.target.innerText || '').trim() === '' &&
+        (event.target.innerHTML || '').trim() === ''
     );
   };
 
@@ -37,7 +37,7 @@ const EditableContent = ({
         onInput={handleInput}
         className={`w-full min-h-28 p-4 border-[1px] rounded-lg text-sm appearance-none bg-base-100 outline-none focus:outline-2 focus:outline-accent input-bordered ${className}`}
         role="textbox"
-        aria-label="input"
+        aria-label="input content"
       ></div>
     </div>
   );
