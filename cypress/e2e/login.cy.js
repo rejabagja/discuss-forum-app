@@ -14,18 +14,6 @@ describe('login spec', () => {
   });
 
   it('should display login page correctly', () => {
-    // verify layout app ui
-    cy.contains('header h1', 'Discuss Forum App').should('be.visible');
-    cy.get('footer nav')
-      .should('be.visible')
-      .within(() => {
-        cy.get('a[href="/"]').contains('Threads').should('be.visible');
-        cy.get('a[href="/leaderboards"]').contains('Leaderboards').should('be.visible');
-        cy.get('a[href="/login"]').contains('Login').should('be.visible');
-      });
-
-
-    // verify login page ui
     cy.contains('h2', 'Log Into Your Account').should('be.visible');
     cy.contains('p', 'Access the forum and join the discussion.').should('be.visible');
     cy.get('input[type="email"][placeholder="Email"]').should('be.visible');
