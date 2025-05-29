@@ -8,16 +8,15 @@ create thread spec:
 */
 
 describe('Create Thread Spec', () => {
+  const token =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXItU2o5eVhpQUp5MTBLRlBmNiIsImlhdCI6MTc0ODUyNjM0Mn0.WwG7gLdJ16EoXkhSBWwXyfj_4F40p5g_hkzejU6IycA';
   beforeEach(() => {
+    window.localStorage.setItem('token', token);
     cy.visit('/', {
-      onBeforeLoad(win) {
-        win.localStorage.setItem(
-          'token',
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXItU2o5eVhpQUp5MTBLRlBmNiIsImlhdCI6MTc0ODUyNjM0Mn0.WwG7gLdJ16EoXkhSBWwXyfj_4F40p5g_hkzejU6IycA'
-        );
-      },
+      onLoad() {
+        cy.get('a[href="/create"]', { timeout: 30000 }).should('exist').click();
+      }
     });
-    cy.get('a[href="/create"]', { timeout: 30000 }).click();
   });
 
   it('should display create thread page correctly', () => {
