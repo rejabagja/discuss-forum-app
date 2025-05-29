@@ -3,6 +3,7 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh, { rules } from 'eslint-plugin-react-refresh'
 import daStyle from 'eslint-config-dicodingacademy'
+import pluginCypress from 'eslint-plugin-cypress/flat'
 
 export default [
   { ignores: ["dist", "**/*.config.js"] },
@@ -32,6 +33,7 @@ export default [
     },
   },
   daStyle,
+  pluginCypress.configs.recommended,
   {
     rules: {
       "linebreak-style": "off",
