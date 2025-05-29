@@ -9,17 +9,13 @@ create thread spec:
 
 describe('Create Thread Spec', () => {
   const hostname = 'http://localhost:5173';
-  const username = 'testuser2';
   const token =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXItU2o5eVhpQUp5MTBLRlBmNiIsImlhdCI6MTc0ODQ5MjAyN30.Wnp4Rm2BHEodyg3KX1OAVTWsETYdvjq-Cxp7fNEzugQ';
 
   beforeEach(() => {
-    cy.visit(`${hostname}/`, {
+    cy.visit(`${hostname}/create`, {
       onBeforeLoad(win) {
         win.localStorage.setItem('token', token);
-      },
-      onLoad() {
-        cy.get('a[href="/create"]').click();
       }
     });
   });
