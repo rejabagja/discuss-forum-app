@@ -8,20 +8,14 @@ create thread spec:
 */
 
 describe('Create Thread Spec', () => {
-  const hostname = 'http://localhost:5173';
-  const username = 'testuser2';
-  const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXItU2o5eVhpQUp5MTBLRlBmNiIsImlhdCI6MTc0ODQ5MjAyN30.Wnp4Rm2BHEodyg3KX1OAVTWsETYdvjq-Cxp7fNEzugQ';
-
   beforeEach(() => {
-    cy.visit(`${hostname}/`, {
-      onBeforeLoad(win) {
-        win.localStorage.setItem('token', token);
-      },
-      onLoad() {
-        cy.get('a[href="/create"]').click();
-      }
-    });
+    cy.visit('http://localhost:5173/login');
+    cy.get('input[type="email"]').type('testy@mail.com');
+    cy.get('input[type="password"]').type('123456');
+    cy.contains('button[type="submit"]', /^Login$/).click();
+    cy.url().should('eq', 'http://localhost:5173/');
+
+    cy.get('a[href="/create"]').should('be.visible').click();
   });
 
   it('should display create thread page correctly', () => {
