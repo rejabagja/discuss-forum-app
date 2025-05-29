@@ -15,7 +15,7 @@ const PageLogin = () => {
 
   return (
     <AuthPageWrapper
-      title="Log Into Your Account"
+      title="Log Into Account"
       subtitle="Access the forum and join the discussion."
       linkAction="register"
     >
