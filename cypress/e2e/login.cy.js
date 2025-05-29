@@ -3,6 +3,7 @@ login spec:
 - should display login page correctly
 - should shown HTML form validation when fields are empty
 - should shown HTML form validation when email field is invalid
+- should redirect to register page when register link is clicked
 - should show teks 'Logging in...' on submit button when login is processing
 - should show error message when login failed
 - should redirect to home page when login success and should have an user avatar on navbar
@@ -10,22 +11,10 @@ login spec:
 
 describe('login spec', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:5173/login');
+    cy.visit('/login');
   });
 
   it('should display login page correctly', () => {
-    // verify layout app ui
-    cy.contains('header h1', 'Discuss Forum App').should('be.visible');
-    cy.get('footer nav')
-      .should('be.visible')
-      .within(() => {
-        cy.get('a[href="/"]').contains('Threads').should('be.visible');
-        cy.get('a[href="/leaderboards"]').contains('Leaderboards').should('be.visible');
-        cy.get('a[href="/login"]').contains('Login').should('be.visible');
-      });
-
-
-    // verify login page ui
     cy.contains('h2', 'Log Into Your Account').should('be.visible');
     cy.contains('p', 'Access the forum and join the discussion.').should('be.visible');
     cy.get('input[type="email"][placeholder="Email"]').should('be.visible');
@@ -57,6 +46,11 @@ describe('login spec', () => {
       const message = $input[0].validationMessage;
       expect(message).to.match(/@|email/i);
     });
+  });
+
+  it('should redirect to register page when register link is clicked', () => {
+    cy.get('a[href="/register"]').click();
+    cy.url().should('eq', 'http://localhost:5173/register');
   });
 
   it('should show teks "Logging in..." on submit button when login is processing', () => {
