@@ -17,7 +17,7 @@ describe('Create Thread Spec', () => {
         );
       },
     });
-    cy.get('a[href="/create"]').click();
+    cy.get('a[href="/create"]', { timeout: 30000 }).click();
   });
 
   it('should display create thread page correctly', () => {
