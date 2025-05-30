@@ -8,16 +8,20 @@ create thread spec:
 */
 
 describe('Create Thread Spec', () => {
-  beforeEach(() => {
-    cy.visit('/', {
-      onBeforeLoad(win) {
-        win.localStorage.setItem(
-          'token',
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXItU2o5eVhpQUp5MTBLRlBmNiIsImlhdCI6MTc0ODUyNjM0Mn0.WwG7gLdJ16EoXkhSBWwXyfj_4F40p5g_hkzejU6IycA'
-        );
-      },
+  const login = (email, password) => {
+    cy.session(email, () => {
+      cy.visit('/login');
+      cy.get('input[type="email"]').type(email);
+      cy.get('input[type="password"]').type(password);
+      cy.contains('button[type="submit"]', /^Login$/).click();
+      cy.url().should('eq', 'http://localhost:5173/');
     });
-    cy.get('a[href="/create"]').click();
+  };
+  beforeEach(() => {
+    login('testy@mail.com', '123456');
+    cy.visit('/');
+    cy.url().should('eq', 'http://localhost:5173/');
+    cy.get('a[href="/create"]').should('exist').click();
   });
 
   it('should display create thread page correctly', () => {
