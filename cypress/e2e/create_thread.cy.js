@@ -9,15 +9,9 @@ create thread spec:
 
 describe('Create Thread Spec', () => {
   beforeEach(() => {
-    cy.visit('/', {
-      onBeforeLoad(win) {
-        win.localStorage.setItem(
-          'token',
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXItU2o5eVhpQUp5MTBLRlBmNiIsImlhdCI6MTc0ODUyNjM0Mn0.WwG7gLdJ16EoXkhSBWwXyfj_4F40p5g_hkzejU6IycA'
-        );
-      },
-    });
-    cy.get('a[href="/create"]').click();
+    cy.login('testy@mail.com', '123456');
+    cy.url().should('eq', 'http://localhost:5173/');
+    cy.get('a[href="/create"]').should('exist').click();
   });
 
   it('should display create thread page correctly', () => {
