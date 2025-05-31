@@ -24,14 +24,11 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-// login session
-Cypress.Commands.add('loginSession', (email, password) => {
-  cy.session('user-session', () => {
-    cy.request('POST', 'https://forum-api.dicoding.dev/v1/login', {
-      email,
-      password,
-    }).then((response) => {
-      window.localStorage.setItem('token', response.body.data.token);
-    });
-  });
+// login
+Cypress.Commands.add('login', (email, password) => {
+  cy.visit('/login');
+  cy.get('input[type="email"]').type(email);
+  cy.get('input[type="password"]').type(password);
+  cy.contains('button[type="submit"]', /^Login$/).click();
+  cy.location('pathname').should('eq', '/');
 });

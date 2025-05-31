@@ -9,14 +9,17 @@ create thread spec:
 
 describe('Create Thread Spec', () => {
   beforeEach(() => {
-    cy.loginSession('testy@mail.com', '123456');
+    cy.session('login-session', () => {
+      cy.login('testy@mail.com', '123456');
+    });
     cy.visit('/');
     cy.window().then((win) => {
+      expect(win.localStorage.getItem('theme')).to.exist;
       expect(win.localStorage.getItem('token')).to.exist;
     });
     cy.get('img[alt="testuser2"]').should('be.visible');
     cy.get('a[href="/create"]').should('exist').click();
-    cy.url().should('eq', 'http://localhost:5173/create');
+    cy.location('pathname').should('eq', '/create');
   });
 
   it('should display create thread page correctly', () => {
@@ -65,6 +68,6 @@ describe('Create Thread Spec', () => {
     cy.get('input[placeholder="Category"]').type('test category');
     cy.get('div[contenteditable="true"]').type('test body');
     cy.contains('button[type="button"]', /^Create$/).click();
-    cy.url().should('eq', 'http://localhost:5173/');
+    cy.location('pathname').should('eq', '/');
   });
 });

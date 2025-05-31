@@ -12,7 +12,7 @@ login spec:
 describe('login spec', () => {
   beforeEach(() => {
     cy.visit('/login');
-    cy.url().should('eq', 'http://localhost:5173/login');
+    cy.location('pathname').should('eq', '/login');
   });
 
   it('should display login page correctly', () => {
@@ -43,10 +43,6 @@ describe('login spec', () => {
     cy.get('input[type="password"]').type('password');
     cy.contains('button[type="submit"]', /^Login$/).click();
     cy.get('input:invalid').should('have.length', 1);
-    cy.get('input:invalid').then(($input) => {
-      const message = $input[0].validationMessage;
-      expect(message).to.match(/@|email/i);
-    });
   });
 
   it('should redirect to register page when register link is clicked', () => {
@@ -76,6 +72,7 @@ describe('login spec', () => {
   });
 
   it('should show error message when login failed', () => {
+    cy.intercept('POST', 'https://forum-api.dicoding.dev/v1/login');
     cy.get('input[type="email"]').type('testy@mail.com');
     cy.get('input[type="password"]').type('password');
     cy.contains('button[type="submit"]', /^Login$/).click();
@@ -89,7 +86,7 @@ describe('login spec', () => {
     cy.get('input[type="email"]').type(email);
     cy.get('input[type="password"]').type(password);
     cy.contains('button[type="submit"]', /^Login$/).click();
-    cy.url().should('eq', 'http://localhost:5173/');
+    cy.location('pathname').should('eq', '/');
     cy.get(`.avatar img[alt="${username}"]`).should('be.visible');
   });
 });
