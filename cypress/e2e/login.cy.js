@@ -12,6 +12,7 @@ login spec:
 describe('login spec', () => {
   beforeEach(() => {
     cy.visit('/login');
+    cy.url().should('eq', 'http://localhost:5173/login');
   });
 
   it('should display login page correctly', () => {

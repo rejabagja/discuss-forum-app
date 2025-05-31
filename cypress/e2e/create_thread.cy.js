@@ -11,10 +11,15 @@ describe('Create Thread Spec', () => {
   beforeEach(() => {
     cy.loginSession('testy@mail.com', '123456');
     cy.visit('/');
+    cy.window().then((win) => {
+      expect(win.localStorage.getItem('token')).to.exist;
+    });
+    cy.get('img[alt="testuser2"]').should('be.visible');
+    cy.get('a[href="/create"]').should('exist').click();
+    cy.url().should('eq', 'http://localhost:5173/create');
   });
 
   it('should display create thread page correctly', () => {
-    cy.get('a[href="/create"]').should('exist').click();
     cy.contains('h2', 'Create New Thread').should('be.visible');
     cy.get('input[placeholder="Title"]').should('be.visible');
     cy.get('input[placeholder="Category"]').should('be.visible');
@@ -24,7 +29,6 @@ describe('Create Thread Spec', () => {
   });
 
   it('should shown error message when title field is empty', () => {
-    cy.get('a[href="/create"]').should('exist').click();
     cy.get('div[contenteditable="true"]').type('test body');
     cy.contains('button[type="button"]', /^Create$/).click();
 
@@ -32,7 +36,6 @@ describe('Create Thread Spec', () => {
   });
 
   it('should shown error message when body field is empty', () => {
-    cy.get('a[href="/create"]').should('exist').click();
     cy.get('input[placeholder="Title"]').type('test title');
     cy.contains('button[type="button"]', /^Create$/).click();
 
@@ -40,7 +43,6 @@ describe('Create Thread Spec', () => {
   });
 
   it('should show teks "Creating..." on submit button when create thread is processing', () => {
-    cy.get('a[href="/create"]').should('exist').click();
     // create thread req intercept
     cy.intercept('POST', 'https://forum-api.dicoding.dev/v1/threads', (req) => {
       req.on('response', (res) => {
@@ -59,7 +61,6 @@ describe('Create Thread Spec', () => {
   });
 
   it('should redirect to home page when create thread success', () => {
-    cy.get('a[href="/create"]').should('exist').click();
     cy.get('input[placeholder="Title"]').type('test title');
     cy.get('input[placeholder="Category"]').type('test category');
     cy.get('div[contenteditable="true"]').type('test body');
