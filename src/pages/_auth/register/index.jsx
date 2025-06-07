@@ -1,6 +1,7 @@
 import { useRegister } from './hooks';
 import { FormRegister } from '@components';
 import AuthPageWrapper from '@layouts/AuthPageWrapper';
+import { Navigate } from 'react-router-dom';
 
 const PageRegister = () => {
   const {
@@ -13,7 +14,11 @@ const PageRegister = () => {
     handleRegister,
     loading,
     error,
+    isCreateSucceded,
   } = useRegister();
+
+  if (isCreateSucceded) return <Navigate to="/login" />;
+
   return (
     <AuthPageWrapper
       title="Create Your Account"

@@ -10,6 +10,7 @@ const useRegister = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isCreateSucceded, setIsCreateSucceded] = useState(false);
   const [name, onChangeName, setName] = useInput('');
   const [email, onChangeEmail, setEmail] = useInput('');
   const [password, onChangePassword, setPassword] = useInput('');
@@ -36,18 +37,8 @@ const useRegister = () => {
           setName('');
           setEmail('');
           setPassword('');
-          toast.success(
-            React.createElement(
-              'div',
-              null,
-              `${res.message} successfully. `,
-              React.createElement(
-                Link,
-                { to: '/login', className: 'text-blue-500 underline' },
-                'Login here'
-              )
-            )
-          );
+          setIsCreateSucceded(true);
+          toast.success(`${res.message} successfully`);
         }
       })
       .catch((error) => {
@@ -76,7 +67,8 @@ const useRegister = () => {
     onChangePassword,
     handleRegister,
     loading,
-    error
+    error,
+    isCreateSucceded,
   };
 };
 
