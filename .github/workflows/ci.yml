@@ -25,8 +25,8 @@ jobs:
         env:
           VITE_BASE_API_URL: ${{ secrets.VITE_BASE_API_URL }}
       - name: upload cypress screenshots
-        uses: actions/upload-artifact@4
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
           path: cypress/screenshots
