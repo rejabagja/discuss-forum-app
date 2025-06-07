@@ -1,7 +1,7 @@
 name: Continuous Integration
 
 on:
-  pull_request:
+  [pull_request, push]:
     branches:
       - main
 
@@ -19,3 +19,11 @@ jobs:
         run: |
           npm install
           npm run ci:test
+        env:
+          VITE_BASE_API_URL: ${{ secrets.VITE_BASE_API_URL }}
+      - name: upload cypress screenshots
+        uses: actions/upload-artifact@4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots

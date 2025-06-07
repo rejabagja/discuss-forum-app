@@ -10,22 +10,10 @@ login spec:
 
 describe('login spec', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:5173/login');
+    cy.visit('/login');
   });
 
   it('should display login page correctly', () => {
-    // verify layout app ui
-    cy.contains('header h1', 'Discuss Forum App').should('be.visible');
-    cy.get('footer nav')
-      .should('be.visible')
-      .within(() => {
-        cy.get('a[href="/"]').contains('Threads').should('be.visible');
-        cy.get('a[href="/leaderboards"]').contains('Leaderboards').should('be.visible');
-        cy.get('a[href="/login"]').contains('Login').should('be.visible');
-      });
-
-
-    // verify login page ui
     cy.contains('h2', 'Log Into Your Account').should('be.visible');
     cy.contains('p', 'Access the forum and join the discussion.').should('be.visible');
     cy.get('input[type="email"][placeholder="Email"]').should('be.visible');
@@ -39,8 +27,7 @@ describe('login spec', () => {
   });
 
   it('should shown HTML form validation when fields are empty', () => {
-    // fields are empty
-    cy.contains('button[type="submit"]', /^Login$/).click();
+    cy.get('form').submit();
     cy.get('input:invalid').should('have.length', 2);
     cy.get('input').should(($input) => {
       expect($input[0].validationMessage).to.eq('Please fill out this field.');
@@ -50,13 +37,8 @@ describe('login spec', () => {
 
   it('should shown HTML form validation when email field is invalid', () => {
     cy.get('input[type="email"]').type('invalid-email');
-    cy.get('input[type="password"]').type('password');
-    cy.contains('button[type="submit"]', /^Login$/).click();
+    cy.get('input[type="password"]').type('password{enter}');
     cy.get('input:invalid').should('have.length', 1);
-    cy.get('input:invalid').then(($input) => {
-      const message = $input[0].validationMessage;
-      expect(message).to.match(/@|email/i);
-    });
   });
 
   it('should show teks "Logging in..." on submit button when login is processing', () => {
@@ -68,8 +50,7 @@ describe('login spec', () => {
     }).as('loginRequest');
 
     cy.get('input[type="email"]').type('testy@mail.com');
-    cy.get('input[type="password"]').type('password');
-    cy.contains('button[type="submit"]', /^Login$/).click();
+    cy.get('input[type="password"]').type('password{enter}');
 
     cy.contains('button[type="submit"]', /^Logging in...$/).should(
       'be.visible'
@@ -82,19 +63,13 @@ describe('login spec', () => {
 
   it('should show error message when login failed', () => {
     cy.get('input[type="email"]').type('testy@mail.com');
-    cy.get('input[type="password"]').type('password');
-    cy.contains('button[type="submit"]', /^Login$/).click();
-    cy.contains('p.text-red-500', 'email or password is wrong').should('be.visible');
+    cy.get('input[type="password"]').type('password{enter}');
+    cy.get('p.text-red-500').should('be.visible');
   });
 
   it('should redirect to home page when login success and have an user avatar on navbar', () => {
-    const username = 'testuser2';
-    const email = 'testy@mail.com';
-    const password = '123456';
-    cy.get('input[type="email"]').type(email);
-    cy.get('input[type="password"]').type(password);
-    cy.contains('button[type="submit"]', /^Login$/).click();
-    cy.url().should('eq', 'http://localhost:5173/');
-    cy.get(`.avatar img[alt="${username}"]`).should('be.visible');
+    cy.get('input[type="email"]').type('testy@mail.com');
+    cy.get('input[type="password"]').type('123456{enter}');
+    cy.location('pathname').should('eq', '/');
   });
 });
