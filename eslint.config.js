@@ -8,7 +8,7 @@ import reactRefresh, { rules } from 'eslint-plugin-react-refresh'
 import daStyle from 'eslint-config-dicodingacademy'
 import pluginCypress from 'eslint-plugin-cypress/flat'
 
-export default [{ ignores: ["dist", "**/*.config.js"] }, {
+export default [{ ignores: ["dist", "**/*.config.js", ".storybook"] }, {
   files: ["./src/**/*.{js,jsx}"],
   languageOptions: {
     ecmaVersion: 2020,
